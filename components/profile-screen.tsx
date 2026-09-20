@@ -6,12 +6,13 @@ import {
 } from "lucide-react";
 import { BottomNav } from "./bottom-nav";
 import { PhoneFrame } from "./phone-frame";
+import { orders } from "@/lib/orders";
 
 const user = { name: "Ibrahim Popatiya", email: "ibrahim@example.com", phone: "+91 98765 43210" };
 
-const stats: { label: string; count: number; Icon: LucideIcon }[] = [
+const stats: { label: string; count: number; Icon: LucideIcon; href?: string }[] = [
   { label: "Wishlist", count: 12, Icon: Heart },
-  { label: "Orders", count: 5, Icon: ShoppingBag },
+  { label: "Orders", count: orders.length, Icon: ShoppingBag, href: "/orders" },
   { label: "Addresses", count: 3, Icon: MapPin },
   { label: "Payment Methods", count: 2, Icon: CreditCard },
 ];
@@ -69,13 +70,21 @@ export function ProfileScreen() {
 
         {/* stats */}
         <div className="mt-[calc(var(--u)*18)] grid grid-cols-4 gap-[calc(var(--u)*15)]">
-          {stats.map(({ label, count, Icon }) => (
-            <button key={label} type="button" className="flex h-[calc(var(--u)*185)] flex-col items-center justify-center rounded-[calc(var(--u)*30)] bg-pill/70 text-center transition-transform active:scale-95">
-              <Icon className="size-[calc(var(--u)*50)]" strokeWidth={1.4} />
-              <span className="mt-[calc(var(--u)*10)] text-[calc(var(--u)*24)] leading-[1.2]">{label}</span>
-              <span className="mt-[calc(var(--u)*8)] text-[calc(var(--u)*23)] text-muted">{count}</span>
-            </button>
-          ))}
+          {stats.map(({ label, count, Icon, href }) => {
+            const cls = "flex h-[calc(var(--u)*185)] flex-col items-center justify-center rounded-[calc(var(--u)*30)] bg-pill/70 text-center transition-transform active:scale-95";
+            const body = (
+              <>
+                <Icon className="size-[calc(var(--u)*50)]" strokeWidth={1.4} />
+                <span className="mt-[calc(var(--u)*10)] text-[calc(var(--u)*24)] leading-[1.2]">{label}</span>
+                <span className="mt-[calc(var(--u)*8)] text-[calc(var(--u)*23)] text-muted">{count}</span>
+              </>
+            );
+            return href ? (
+              <Link key={label} href={href} className={cls}>{body}</Link>
+            ) : (
+              <button key={label} type="button" className={cls}>{body}</button>
+            );
+          })}
         </div>
 
         {/* menu */}

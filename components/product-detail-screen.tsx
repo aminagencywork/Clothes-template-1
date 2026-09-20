@@ -55,7 +55,29 @@ export function ProductDetailScreen({ product }: { product: Product }) {
   const addBtn = useRef<HTMLButtonElement>(null);
   const cartBtn = useRef<HTMLAnchorElement>(null);
   const [bump, setBump] = useState(0);
-  const [flyers, setFlyers] = useState<{ id: number; x: number; y: number; dx: number; dy: number }[]>([]);
+  const [likeBump, setLikeBump] = useState(0);
+  const heartBtn = useRef<HTMLButtonElement>(null);
+  const galleryBox = useRef<HTMLDivElement>(null);
+  type Flyer = { id: number; x: number; y: number; dx: number; dy: number; done: () => void };
+  const [flyers, setFlyers] = useState<Flyer[]>([]);
+
+  /** Fly a product thumbnail from one element to another, then run `done`. */
+  const fly = (from: HTMLElement | null, to: HTMLElement | null, done: () => void) => {
+    const a = from?.getBoundingClientRect();
+    const c = to?.getBoundingClientRect();
+    if (!a || !c || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return done();
+    setFlyers((f) => [
+      ...f,
+      {
+        id: Date.now() + Math.random(),
+        x: a.left + a.width / 2 - 22,
+        y: a.top + a.height / 2 - 22,
+        dx: c.left + c.width / 2 - (a.left + a.width / 2),
+        dy: c.top + c.height / 2 - (a.top + a.height / 2),
+        done,
+      },
+    ]);
+  };
 
   const commit = () => {
     addToCart({ productId: product.id, size, color, colorName: COLOR_NAMES[product.colors[color]] ?? "Custom", qty });
@@ -65,22 +87,18 @@ export function ProductDetailScreen({ product }: { product: Product }) {
   const add = () => {
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
-    const a = addBtn.current?.getBoundingClientRect();
-    const c = cartBtn.current?.getBoundingClientRect();
-    if (!a || !c || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return commit();
-    setFlyers((f) => [
-      ...f,
-      {
-        id: Date.now() + Math.random(),
-        x: a.left + a.width / 2 - 22,
-        y: a.top + a.height / 2 - 22,
-        dx: c.left + c.width / 2 - (a.left + a.width / 2),
-        dy: c.top + c.height / 2 - (a.top + a.height / 2),
-      },
-    ]);
+    fly(addBtn.current, cartBtn.current, commit);
   };
 
-  const flyRef = (el: HTMLDivElement | null, f: { id: number; dx: number; dy: number }) => {
+  const toggleSave = () => {
+    if (liked) return setLiked(false);
+    fly(galleryBox.current, heartBtn.current, () => {
+      setLiked(true);
+      setLikeBump((b) => b + 1);
+    });
+  };
+
+  const flyRef = (el: HTMLDivElement | null, f: Flyer) => {
     if (!el || el.dataset.started) return;
     el.dataset.started = "1";
     const anim = el.animate(
@@ -93,7 +111,7 @@ export function ProductDetailScreen({ product }: { product: Product }) {
     );
     anim.onfinish = () => {
       setFlyers((all) => all.filter((x) => x.id !== f.id));
-      commit();
+      f.done();
     };
   };
 
@@ -117,8 +135,8 @@ export function ProductDetailScreen({ product }: { product: Product }) {
                 </span>
               )}
             </Link>
-            <button type="button" aria-label="Save" aria-pressed={liked} onClick={() => setLiked((l) => !l)} className={cn(round, "size-[calc(var(--u)*92)]")}>
-              <Heart className={cn("size-[calc(var(--u)*44)]", liked && "text-[#b23a48]")} fill={liked ? "currentColor" : "none"} strokeWidth={1.6} />
+            <button ref={heartBtn} type="button" aria-label="Save" aria-pressed={liked} onClick={toggleSave} className={cn(round, "size-[calc(var(--u)*92)]")}>
+              <Heart key={likeBump} className={cn("size-[calc(var(--u)*44)]", liked && "text-[#b23a48] animate-[cart-pop_0.45s_cubic-bezier(0.34,1.56,0.64,1)]")} fill={liked ? "currentColor" : "none"} strokeWidth={1.6} />
             </button>
             <button type="button" aria-label="Share" className={cn(round, "size-[calc(var(--u)*92)]")}>
               <Share2 className="size-[calc(var(--u)*40)]" strokeWidth={1.6} />
@@ -128,7 +146,7 @@ export function ProductDetailScreen({ product }: { product: Product }) {
 
         {/* gallery */}
         <section className={cn("mt-[calc(var(--u)*22)] flex gap-[calc(var(--u)*16)]", px, "!px-[calc(var(--u)*55)]")}>
-          <div className={cn("relative h-[calc(var(--u)*765)] overflow-hidden rounded-[calc(var(--u)*40)] bg-card", gallery.length > 1 ? "w-[calc(var(--u)*622)]" : "w-full")}>
+          <div ref={galleryBox} className={cn("relative h-[calc(var(--u)*765)] overflow-hidden rounded-[calc(var(--u)*40)] bg-card", gallery.length > 1 ? "w-[calc(var(--u)*622)]" : "w-full")}>
             <Image key={gallery[image]} src={gallery[image]} alt={product.name} fill sizes="400px" priority className="object-cover object-top" />
             {off > 0 && (
               <span className="absolute left-[calc(var(--u)*25)] top-[calc(var(--u)*30)] rounded-full bg-white px-[calc(var(--u)*24)] py-[calc(var(--u)*16)] text-[calc(var(--u)*24)]">{off}% Off</span>

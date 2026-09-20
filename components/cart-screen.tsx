@@ -42,7 +42,7 @@ export function CartScreen() {
           <Link href="/home" aria-label="Back" className={cn(round, "size-[calc(var(--u)*88)]")}>
             <ChevronLeft className="size-[calc(var(--u)*44)]" strokeWidth={1.6} />
           </Link>
-          <div className="absolute inset-x-0 top-[calc(var(--u)*-2)] text-center">
+          <div className="pointer-events-none absolute inset-x-0 top-[calc(var(--u)*-2)] text-center">
             <h1 className="font-display text-[calc(var(--u)*52)] leading-[1.1]">My Cart</h1>
             <p className="mt-[calc(var(--u)*8)] text-[calc(var(--u)*24)] text-muted">Review your items before checkout</p>
           </div>
