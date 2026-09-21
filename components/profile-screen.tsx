@@ -6,20 +6,20 @@ import {
 } from "lucide-react";
 import { BottomNav } from "./bottom-nav";
 import { PhoneFrame } from "./phone-frame";
+import { ProfileAvatar, ProfileText } from "./profile-bits";
+import { WishlistCount } from "./wishlist-count";
 import { orders } from "@/lib/orders";
 
-const user = { name: "Ibrahim Popatiya", email: "ibrahim@example.com", phone: "+91 98765 43210" };
-
-const stats: { label: string; count: number; Icon: LucideIcon; href?: string }[] = [
-  { label: "Wishlist", count: 12, Icon: Heart },
+const stats: { label: string; count: number | "wishlist"; Icon: LucideIcon; href?: string }[] = [
+  { label: "Wishlist", count: "wishlist", Icon: Heart, href: "/wishlist" },
   { label: "Orders", count: orders.length, Icon: ShoppingBag, href: "/orders" },
-  { label: "Addresses", count: 3, Icon: MapPin },
+  { label: "Addresses", count: 1, Icon: MapPin, href: "/address" },
   { label: "Payment Methods", count: 2, Icon: CreditCard },
 ];
 
-const menu: { label: string; Icon: LucideIcon }[] = [
-  { label: "Personal Information", Icon: User },
-  { label: "Manage Addresses", Icon: MapPin },
+const menu: { label: string; Icon: LucideIcon; href?: string }[] = [
+  { label: "Personal Information", Icon: User, href: "/profile/edit" },
+  { label: "Manage Addresses", Icon: MapPin, href: "/address" },
   { label: "Payment Methods", Icon: CreditCard },
   { label: "Notifications", Icon: Bell },
   { label: "Promo Codes", Icon: Tag },
@@ -53,19 +53,19 @@ export function ProfileScreen() {
         {/* user card */}
         <section className="mt-[calc(var(--u)*38)] flex h-[calc(var(--u)*205)] items-center rounded-[calc(var(--u)*30)] bg-pill/70 px-[calc(var(--u)*26)]">
           <div className="relative size-[calc(var(--u)*172)] shrink-0">
-            <Image src="/images/avatar.jpg" alt={user.name} width={172} height={172} className="size-full rounded-full object-cover" />
-            <button type="button" aria-label="Change photo" className="absolute bottom-0 right-0 grid size-[calc(var(--u)*52)] place-items-center rounded-full bg-white shadow">
+            <ProfileAvatar className="size-full rounded-full object-cover" />
+            <Link href="/profile/edit" aria-label="Edit photo" className="absolute bottom-0 right-0 grid size-[calc(var(--u)*52)] place-items-center rounded-full bg-white shadow">
               <Pencil className="size-[calc(var(--u)*26)]" strokeWidth={1.6} />
-            </button>
+            </Link>
           </div>
           <div className="ml-[calc(var(--u)*44)] min-w-0 flex-1">
-            <h2 className="font-display text-[calc(var(--u)*39)] leading-tight">{user.name}</h2>
-            <p className="mt-[calc(var(--u)*10)] text-[calc(var(--u)*27)] text-muted">{user.email}</p>
-            <p className="mt-[calc(var(--u)*12)] text-[calc(var(--u)*27)] text-muted">{user.phone}</p>
+            <h2 className="font-display text-[calc(var(--u)*39)] leading-tight"><ProfileText field="name" /></h2>
+            <p className="mt-[calc(var(--u)*10)] text-[calc(var(--u)*27)] text-muted"><ProfileText field="email" /></p>
+            <p className="mt-[calc(var(--u)*12)] text-[calc(var(--u)*27)] text-muted"><ProfileText field="phone" /></p>
           </div>
-          <button type="button" className="flex shrink-0 items-center gap-[calc(var(--u)*14)] self-start pt-[calc(var(--u)*82)] text-[calc(var(--u)*25)] text-muted">
+          <Link href="/profile/edit" className="flex shrink-0 items-center gap-[calc(var(--u)*14)] self-start pt-[calc(var(--u)*82)] text-[calc(var(--u)*25)] text-muted">
             Edit Profile <ChevronRight className="size-[calc(var(--u)*32)] text-ink" />
-          </button>
+          </Link>
         </section>
 
         {/* stats */}
@@ -76,7 +76,7 @@ export function ProfileScreen() {
               <>
                 <Icon className="size-[calc(var(--u)*50)]" strokeWidth={1.4} />
                 <span className="mt-[calc(var(--u)*10)] text-[calc(var(--u)*24)] leading-[1.2]">{label}</span>
-                <span className="mt-[calc(var(--u)*8)] text-[calc(var(--u)*23)] text-muted">{count}</span>
+                <span className="mt-[calc(var(--u)*8)] text-[calc(var(--u)*23)] text-muted">{count === "wishlist" ? <WishlistCount /> : count}</span>
               </>
             );
             return href ? (
@@ -89,15 +89,21 @@ export function ProfileScreen() {
 
         {/* menu */}
         <ul className="mt-[calc(var(--u)*28)] rounded-[calc(var(--u)*30)] bg-white px-[calc(var(--u)*28)] shadow-[0_4px_24px_rgba(60,45,20,0.05)]">
-          {menu.map(({ label, Icon }, i) => (
-            <li key={label} className={i > 0 ? "border-t border-black/[0.06]" : ""}>
-              <button type="button" className="flex h-[calc(var(--u)*80)] w-full items-center gap-[calc(var(--u)*36)] text-left">
+          {menu.map(({ label, Icon, href }, i) => {
+            const cls = "flex h-[calc(var(--u)*80)] w-full items-center gap-[calc(var(--u)*36)] text-left";
+            const body = (
+              <>
                 <Icon className="size-[calc(var(--u)*40)]" strokeWidth={1.5} />
                 <span className="flex-1 text-[calc(var(--u)*27)]">{label}</span>
                 <ChevronRight className="size-[calc(var(--u)*34)]" strokeWidth={1.6} />
-              </button>
-            </li>
-          ))}
+              </>
+            );
+            return (
+              <li key={label} className={i > 0 ? "border-t border-black/[0.06]" : ""}>
+                {href ? <Link href={href} className={cls}>{body}</Link> : <button type="button" className={cls}>{body}</button>}
+              </li>
+            );
+          })}
         </ul>
 
         {/* offers */}
