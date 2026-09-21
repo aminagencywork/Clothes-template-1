@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Lock } from "lucide-react";
-import { CheckoutShell, card, editLink, primaryBtn } from "./checkout-shell";
+import { CheckoutShell, card, editLink } from "./checkout-shell";
+import { SlideToPlace } from "./slide-to-place";
 import { cn } from "@/lib/utils";
 import { DELIVERY, addressLines, deliveryEta, formatDay, isoDate, money, newOrderId, paymentSummary, useAddresses, useCheckout, useCheckoutTotals } from "@/lib/checkout";
 import { addPlacedOrder } from "@/lib/placed-orders";
@@ -101,9 +101,7 @@ export function CheckoutReviewStep() {
         </div>
       </section>
 
-      <button type="button" onClick={place} disabled={!address || t.lines.length === 0} className={cn(primaryBtn, "mt-[calc(var(--u)*26)]")}>
-        <Lock className="size-[calc(var(--u)*36)]" strokeWidth={1.5} /> Place Order
-      </button>
+      <SlideToPlace onConfirm={place} disabled={!address || t.lines.length === 0} />
       <p className="mt-[calc(var(--u)*18)] text-center text-[calc(var(--u)*21)] leading-[1.5] text-muted">
         By placing this order, you agree to our <u>Terms &amp; Conditions</u><br />and <u>Privacy Policy</u>.
       </p>

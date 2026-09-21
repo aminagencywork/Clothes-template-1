@@ -29,3 +29,9 @@ body {
   0% { transform: scale(0.4); }
   100% { transform: scale(1); }
 }
+
+@keyframes tick-burst {
+  0% { opacity: 0; translate: 0 0; scale: 0.4; }
+  35% { opacity: 1; }
+  100% { opacity: 0.85; translate: var(--tx) var(--ty); scale: 1; }
+}

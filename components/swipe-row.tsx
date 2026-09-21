@@ -16,102 +16,154 @@ type Props = {
 const OPEN_AT = 0.2; // fraction of the row width: past this the panel stays open
 const COMMIT_AT = 0.55; // past this the action fires on release
 const PANEL = 0.18; // width of an open panel, as a fraction of the row width
+const FLICK = 0.6; // px/ms: a fast flick counts even for a short drag
+const EASE = "transform 240ms cubic-bezier(0.22, 0.9, 0.3, 1)";
 
-/** A list row you can swipe: left reveals Delete, right reveals Add to Wishlist. Works with touch and mouse. */
+/**
+ * A list row you can swipe: left reveals Delete, right reveals Add to Wishlist. Touch and mouse.
+ * While dragging, the row is moved straight through the DOM (transform only, one write per frame),
+ * so React never re-renders during a swipe — that keeps it smooth.
+ */
 export function SwipeRow({ children, onDelete, onWishlist, className }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
-  const start = useRef<{ x: number; y: number; base: number; id: number } | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const delRef = useRef<HTMLDivElement>(null);
+  const wishRef = useRef<HTMLDivElement>(null);
+
+  const dx = useRef(0);
+  const target = useRef(0);
+  const frame = useRef(0);
+  const drag = useRef<{ x: number; y: number; base: number; id: number; active: boolean; lastX: number; lastT: number; v: number } | null>(null);
   const moved = useRef(false);
-  const [dx, setDx] = useState(0);
-  const [dragging, setDragging] = useState(false);
-  const [leaving, setLeaving] = useState<null | "delete" | "wishlist">(null);
+  const busy = useRef(false);
+
+  const [open, setOpen] = useState<-1 | 0 | 1>(0); // settled state, for a11y + tab order only
   const [collapsed, setCollapsed] = useState(false);
 
-  const width = () => ref.current?.offsetWidth ?? 800;
+  const width = () => rootRef.current?.offsetWidth ?? 800;
+
+  /** Position the card and show only the panel for the swipe direction. */
+  const paint = (x: number, animate: boolean) => {
+    dx.current = x;
+    const card = cardRef.current;
+    if (!card) return;
+    card.style.transition = animate ? EASE : "none";
+    card.style.transform = `translate3d(${x}px,0,0)`;
+    if (delRef.current) delRef.current.style.visibility = x < 0 ? "visible" : "hidden";
+    if (wishRef.current) wishRef.current.style.visibility = x > 0 ? "visible" : "hidden";
+  };
+
+  const schedule = (x: number) => {
+    target.current = x;
+    if (frame.current) return;
+    frame.current = requestAnimationFrame(() => {
+      frame.current = 0;
+      paint(target.current, false);
+    });
+  };
+
+  const settle = (x: number) => {
+    cancelAnimationFrame(frame.current);
+    frame.current = 0;
+    paint(x, true);
+    setOpen(x === 0 ? 0 : x < 0 ? -1 : 1);
+  };
 
   const commit = (kind: "delete" | "wishlist") => {
-    setLeaving(kind);
-    setDx(kind === "delete" ? -width() : width());
-    setTimeout(() => setCollapsed(true), 180);
-    setTimeout(() => (kind === "delete" ? onDelete() : onWishlist()), 420);
+    if (busy.current) return;
+    busy.current = true;
+    cancelAnimationFrame(frame.current);
+    frame.current = 0;
+    paint(kind === "delete" ? -width() : width(), true);
+    setTimeout(() => setCollapsed(true), 200);
+    setTimeout(() => (kind === "delete" ? onDelete() : onWishlist()), 440);
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
-    if (leaving || (e.pointerType === "mouse" && e.button !== 0)) return;
-    start.current = { x: e.clientX, y: e.clientY, base: dx, id: e.pointerId };
+    if (busy.current || (e.pointerType === "mouse" && e.button !== 0)) return;
+    // Stop any settle animation and continue from where the row visually is.
+    const card = cardRef.current;
+    const current = card ? new DOMMatrixReadOnly(getComputedStyle(card).transform).m41 : dx.current;
+    paint(current, false);
+    drag.current = { x: e.clientX, y: e.clientY, base: current, id: e.pointerId, active: false, lastX: e.clientX, lastT: e.timeStamp, v: 0 };
     moved.current = false;
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    const s = start.current;
-    if (!s || leaving) return;
-    const mx = e.clientX - s.x;
-    const my = e.clientY - s.y;
-    if (!dragging) {
-      // Only treat clearly horizontal movement as a swipe so vertical scrolling still works.
-      if (Math.abs(mx) < 8 || Math.abs(mx) < Math.abs(my)) return;
-      setDragging(true);
-      ref.current?.setPointerCapture(s.id);
+    const d = drag.current;
+    if (!d || busy.current) return;
+    const mx = e.clientX - d.x;
+    if (!d.active) {
+      // Only clearly horizontal movement starts a swipe, so vertical scrolling still works.
+      if (Math.abs(mx) < 6 || Math.abs(mx) < Math.abs(e.clientY - d.y)) return;
+      d.active = true;
+      cardRef.current?.setPointerCapture(d.id);
     }
     moved.current = true;
+    const dt = e.timeStamp - d.lastT;
+    if (dt > 0) d.v = (e.clientX - d.lastX) / dt;
+    d.lastX = e.clientX;
+    d.lastT = e.timeStamp;
     const w = width();
-    setDx(Math.max(-w, Math.min(w, s.base + mx)));
+    let x = d.base + mx;
+    // A little resistance once past the commit point.
+    if (Math.abs(x) > w * COMMIT_AT) x = Math.sign(x) * (w * COMMIT_AT + (Math.abs(x) - w * COMMIT_AT) * 0.4);
+    schedule(Math.max(-w, Math.min(w, x)));
   };
 
   const onPointerUp = () => {
-    const s = start.current;
-    start.current = null;
-    if (!s || !dragging) return;
-    setDragging(false);
+    const d = drag.current;
+    drag.current = null;
+    if (!d?.active) return;
     const w = width();
-    if (dx <= -COMMIT_AT * w) return commit("delete");
-    if (dx >= COMMIT_AT * w) return commit("wishlist");
-    if (dx <= -OPEN_AT * w) return setDx(-PANEL * w);
-    if (dx >= OPEN_AT * w) return setDx(PANEL * w);
-    setDx(0);
+    const x = dx.current;
+    const flickLeft = d.v < -FLICK && x < 0;
+    const flickRight = d.v > FLICK && x > 0;
+    if (x <= -COMMIT_AT * w) return commit("delete");
+    if (x >= COMMIT_AT * w) return commit("wishlist");
+    if (x <= -OPEN_AT * w || flickLeft) return settle(-PANEL * w);
+    if (x >= OPEN_AT * w || flickRight) return settle(PANEL * w);
+    settle(0);
   };
 
-  const panel = Math.abs(dx);
-  const open = !leaving && (dx === 0 ? 0 : dx < 0 ? -1 : 1);
+  const panelBase = "absolute inset-y-0 flex items-center text-white [will-change:visibility]";
 
   return (
     <div
-      ref={ref}
-      className={cn("relative overflow-hidden rounded-[calc(var(--u)*28)] transition-[max-height,opacity,margin] duration-200 ease-out", className)}
-      style={collapsed ? { maxHeight: 0, opacity: 0, marginTop: 0, marginBottom: 0 } : { maxHeight: 600 }}
+      ref={rootRef}
+      className={cn("relative overflow-hidden rounded-[calc(var(--u)*28)] transition-[max-height,opacity] duration-200 ease-out", className)}
+      style={collapsed ? { maxHeight: 0, opacity: 0 } : { maxHeight: 600 }}
     >
-      {dx < 0 && (
+      {/* action panels sit behind the card; the card's own opaque backdrop hides them until it slides away */}
+      <div ref={delRef} className={cn(panelBase, "inset-x-0 justify-end bg-[#ef4136]")} style={{ visibility: "hidden" }} aria-hidden={open !== -1}>
         <button
           type="button"
           aria-label="Delete item"
           tabIndex={open === -1 ? 0 : -1}
           onClick={() => commit("delete")}
-          className="absolute inset-y-0 right-0 flex flex-col items-center justify-center gap-[calc(var(--u)*8)] bg-[#ef4136] text-white"
-          style={{ width: panel }}
+          className="flex h-full flex-col items-center justify-center gap-[calc(var(--u)*8)] text-[calc(var(--u)*24)] font-medium"
+          style={{ width: `${PANEL * 100}%` }}
         >
-          <span className="flex flex-col items-center gap-[calc(var(--u)*8)] overflow-hidden text-[calc(var(--u)*24)] font-medium">
-            <Trash2 className="size-[calc(var(--u)*48)]" strokeWidth={1.6} />
-            Delete
-          </span>
+          <Trash2 className="size-[calc(var(--u)*48)]" strokeWidth={1.6} />
+          Delete
         </button>
-      )}
-      {dx > 0 && (
+      </div>
+      <div ref={wishRef} className={cn(panelBase, "inset-x-0 justify-start bg-[#f0507a]")} style={{ visibility: "hidden" }} aria-hidden={open !== 1}>
         <button
           type="button"
           aria-label="Add to wishlist"
           tabIndex={open === 1 ? 0 : -1}
           onClick={() => commit("wishlist")}
-          className="absolute inset-y-0 left-0 flex flex-col items-center justify-center bg-[#f0507a] text-white"
-          style={{ width: panel }}
+          className="flex h-full flex-col items-center justify-center gap-[calc(var(--u)*8)] text-center text-[calc(var(--u)*22)] font-medium leading-tight"
+          style={{ width: `${PANEL * 100}%` }}
         >
-          <span className="flex flex-col items-center gap-[calc(var(--u)*8)] overflow-hidden text-center text-[calc(var(--u)*22)] font-medium leading-tight">
-            <Heart className="size-[calc(var(--u)*48)]" strokeWidth={1.6} />
-            Add to<br />Wishlist
-          </span>
+          <Heart className="size-[calc(var(--u)*48)]" strokeWidth={1.6} />
+          Add to<br />Wishlist
         </button>
-      )}
+      </div>
 
       <div
+        ref={cardRef}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -121,15 +173,15 @@ export function SwipeRow({ children, onDelete, onWishlist, className }: Props) {
             e.preventDefault();
             e.stopPropagation();
             moved.current = false;
-          } else if (open) {
+          } else if (open !== 0) {
             // Tapping the row while a panel is open just closes it.
             e.preventDefault();
             e.stopPropagation();
-            setDx(0);
+            settle(0);
           }
         }}
-        style={{ transform: `translateX(${dx}px)`, touchAction: "pan-y" }}
-        className={cn("relative select-none", !dragging && "transition-transform duration-200 ease-out", leaving && "pointer-events-none")}
+        style={{ touchAction: "pan-y", willChange: "transform" }}
+        className="relative select-none rounded-[calc(var(--u)*28)] bg-page"
       >
         {children}
       </div>
