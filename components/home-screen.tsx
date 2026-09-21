@@ -85,7 +85,7 @@ export function HomeScreen() {
           </button>
           <Image src="/images/home-logo.jpg" alt="Vyntra – wear a brighter you" width={290} height={135} priority className="h-[calc(var(--u)*92)] w-auto mix-blend-multiply" />
           <Link href="/profile" aria-label="Profile" className="block rounded-full bg-white p-[calc(var(--u)*4)] shadow-[0_4px_20px_rgba(60,45,20,0.1)]">
-            <Image src="/images/home-avatar.jpg" alt="" width={92} height={92} className="size-[calc(var(--u)*88)] rounded-full object-cover" />
+            <Image src="/images/profile-logo.jpg" alt="" width={92} height={92} className="size-[calc(var(--u)*88)] rounded-full object-cover" />
           </Link>
         </header>
         </section>

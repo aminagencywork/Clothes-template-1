@@ -2,13 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
-import { ArrowRight, ChevronLeft, Lock, Minus, MoreHorizontal, Plus, ShieldCheck, Tag, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, ChevronLeft, Heart, Lock, Minus, MoreHorizontal, Plus, ShieldCheck, Tag } from "lucide-react";
 import { BottomNav } from "./bottom-nav";
 import { PhoneFrame } from "./phone-frame";
+import { SwipeRow } from "./swipe-row";
 import { cn } from "@/lib/utils";
 import { products } from "@/lib/products";
 import { lineKey, removeCartItem, updateCartItem, useCart } from "@/lib/cart";
+import { addToWishlist } from "@/lib/wishlist";
 
 
 const DISCOUNT_RATE = 0.1;
@@ -19,6 +21,19 @@ const card = "rounded-[calc(var(--u)*28)] bg-white/70 shadow-[0_2px_14px_rgba(60
 
 export function CartScreen() {
   const items = useCart();
+  const [movedToWishlist, setMovedToWishlist] = useState(false);
+
+  useEffect(() => {
+    if (!movedToWishlist) return;
+    const t = setTimeout(() => setMovedToWishlist(false), 4000);
+    return () => clearTimeout(t);
+  }, [movedToWishlist]);
+
+  const moveToWishlist = (productId: string, key: string) => {
+    addToWishlist(productId);
+    removeCartItem(key);
+    setMovedToWishlist(true);
+  };
 
   const lines = useMemo(
     () => items.flatMap((it) => {
@@ -33,6 +48,14 @@ export function CartScreen() {
   const shipping = lines.length ? SHIPPING : 0;
   const total = subtotal - discount + shipping;
 
+
+  const toast = movedToWishlist && (
+    <div role="status" className="mt-[calc(var(--u)*20)] flex items-center gap-[calc(var(--u)*20)] rounded-[calc(var(--u)*22)] bg-[#e3f2e3] px-[calc(var(--u)*28)] py-[calc(var(--u)*24)] text-[calc(var(--u)*25)] text-[#2d6a3a] animate-[cart-pop_0.4s_cubic-bezier(0.34,1.56,0.64,1)]">
+      <Heart className="size-[calc(var(--u)*34)] shrink-0" fill="currentColor" />
+      <span className="flex-1">Item moved to Wishlist</span>
+      <Link href="/wishlist" className="font-medium underline underline-offset-4">View Wishlist</Link>
+    </div>
+  );
 
   return (
     <PhoneFrame>
@@ -58,7 +81,9 @@ export function CartScreen() {
         {/* items */}
         <ul className="mt-[calc(var(--u)*6)] space-y-[calc(var(--u)*20)]">
           {lines.map(({ it, product }) => (
-            <li key={lineKey(it)}className={cn(card, "flex min-h-[calc(var(--u)*222)] items-center p-[calc(var(--u)*7)]")}>
+            <li key={lineKey(it)}>
+              <SwipeRow onDelete={() => removeCartItem(lineKey(it))} onWishlist={() => moveToWishlist(product.id, lineKey(it))}>
+              <div className={cn(card, "flex min-h-[calc(var(--u)*222)] items-center p-[calc(var(--u)*7)]")}>
               <Link href={`/product/${product.id}`} className="relative self-stretch w-[calc(var(--u)*205)] shrink-0 overflow-hidden rounded-[calc(var(--u)*24)] bg-card">
                 <Image src={product.image} alt={product.name} fill sizes="120px" className="object-cover object-top" />
               </Link>
@@ -71,7 +96,7 @@ export function CartScreen() {
                 <p className="mt-[calc(var(--u)*18)] text-[calc(var(--u)*24)] leading-[1.35] text-muted">Size: {it.size}</p>
                 <p className="mt-[calc(var(--u)*8)] text-[calc(var(--u)*24)] leading-[1.35] text-muted">Color: {it.colorName}</p>
               </div>
-              <div className="ml-[calc(var(--u)*12)] flex h-[calc(var(--u)*58)] w-[calc(var(--u)*150)] shrink-0 items-center justify-between rounded-full bg-pill/80 px-[calc(var(--u)*8)]">
+              <div className="ml-[calc(var(--u)*12)] mr-[calc(var(--u)*20)] flex h-[calc(var(--u)*58)] w-[calc(var(--u)*150)] shrink-0 items-center justify-between rounded-full bg-pill/80 px-[calc(var(--u)*8)]">
                 <button type="button" aria-label="Decrease quantity" onClick={() => updateCartItem(lineKey(it), it.qty - 1)} className="grid size-[calc(var(--u)*40)] place-items-center">
                   <Minus className="size-[calc(var(--u)*28)]" strokeWidth={1.8} />
                 </button>
@@ -80,9 +105,8 @@ export function CartScreen() {
                   <Plus className="size-[calc(var(--u)*28)]" strokeWidth={1.8} />
                 </button>
               </div>
-              <button type="button" aria-label={`Remove ${product.name}`} onClick={() => removeCartItem(lineKey(it))} className="mx-[calc(var(--u)*20)] grid size-[calc(var(--u)*64)] place-items-center">
-                <Trash2 className="size-[calc(var(--u)*46)]" strokeWidth={1.6} />
-              </button>
+              </div>
+              </SwipeRow>
             </li>
           ))}
         </ul>
@@ -95,6 +119,7 @@ export function CartScreen() {
             </Link>
           </div>
         )}
+        {lines.length === 0 && toast}
 
         {lines.length > 0 && (
           <>
@@ -123,6 +148,7 @@ export function CartScreen() {
                 <span className="text-[calc(var(--u)*38)] font-semibold">{money(total)}</span>
               </div>
             </section>
+            {toast}
 
             <Link href="/checkout/address" className="mt-[calc(var(--u)*17)] flex h-[calc(var(--u)*88)] w-full items-center justify-center gap-[calc(var(--u)*26)] rounded-[calc(var(--u)*24)] bg-gold-dark text-[calc(var(--u)*30)] text-white transition-transform active:scale-[0.99]">
               <Lock className="size-[calc(var(--u)*40)]" strokeWidth={1.5} />

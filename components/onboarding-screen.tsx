@@ -60,6 +60,8 @@ export function OnboardingScreen() {
           <path d="M0 230 C60 260 120 330 130 420 C135 460 120 490 100 500" />
         </svg>
 
+        {/* content is shifted down to make room for the logo */}
+        <div className="absolute inset-0 translate-y-[calc(var(--u)*80)]">
         {/* slides: photo cards */}
         {slides.map((slide, i) => (
           <div key={i} className={`transition-opacity duration-700 ${i === active ? "opacity-100" : "opacity-0"}`} aria-hidden={i !== active}>
@@ -115,6 +117,10 @@ export function OnboardingScreen() {
             Get Started
           </span>
         </Link>
+        </div>
+
+        {/* logo */}
+        <Image src="/images/navbar-logo.png" alt="Vyntra – wear a brighter you" width={900} height={519} priority className={`${abs} left-1/2 top-[calc(var(--u)*30)] z-10 h-[calc(var(--u)*150)] w-auto -translate-x-1/2`} />
       </main>
     </div>
   );

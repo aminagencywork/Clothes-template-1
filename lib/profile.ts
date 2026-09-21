@@ -11,7 +11,7 @@ export const DEFAULT_PROFILE: Profile = {
   dob: "2003-03-15",
   gender: "Male",
   bio: "Fashion enthusiast | Keep exploring new styles ✨",
-  photo: "/images/avatar.jpg",
+  photo: "/images/profile-logo.jpg",
 };
 
 const KEY = "profile";
