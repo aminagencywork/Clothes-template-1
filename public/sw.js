@@ -2,7 +2,7 @@
    - Static assets (JS/CSS/fonts/images/icons): cache-first, filled as they are used.
    - Page navigations: network-first, falling back to the last cached copy, then to the offline page.
    Cart, wishlist and orders live in localStorage, so cached pages keep working offline. */
-const VERSION = "v1";
+const VERSION = "v2";
 const STATIC = `vyntra-static-${VERSION}`;
 const PAGES = `vyntra-pages-${VERSION}`;
 const PRECACHE = ["/home", "/categories", "/cart", "/wishlist", "/profile", "/offline"];
