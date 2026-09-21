@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowRight, ChevronRight, Menu, Search, X } from "lucide-react";
+import { AddToCartButton } from "./add-to-cart-button";
 import { BottomNav } from "./bottom-nav";
 import { FavoriteButton } from "./favorite-button";
 import { MenuDrawer } from "./menu-drawer";
@@ -14,7 +15,7 @@ import { categories, products, type Category, type Product } from "@/lib/product
 
 function CollectionCard({ product, liked, onToggleLike }: { product: Product; liked: boolean; onToggleLike: (id: string) => void }) {
   return (
-    <article className="w-[calc(var(--u)*287)] shrink-0 snap-start overflow-hidden rounded-[calc(var(--u)*34)] bg-white pb-[calc(var(--u)*28)] shadow-[0_4px_24px_rgba(60,45,20,0.06)]">
+    <article className="relative w-[calc(var(--u)*287)] shrink-0 snap-start overflow-hidden rounded-[calc(var(--u)*34)] bg-white pb-[calc(var(--u)*28)] shadow-[0_4px_24px_rgba(60,45,20,0.06)]">
       <div className="relative h-[calc(var(--u)*342)] bg-card">
         <Link href={`/product/${product.id}`} aria-label={product.name} className="absolute inset-0">
           <Image src={product.image} alt={product.name} fill sizes="140px" className="object-cover object-top" />
@@ -37,6 +38,7 @@ function CollectionCard({ product, liked, onToggleLike }: { product: Product; li
           ))}
         </div>
       </div>
+      <AddToCartButton product={product} className="bottom-[calc(var(--u)*20)] right-[calc(var(--u)*20)] size-[calc(var(--u)*64)] rounded-[calc(var(--u)*20)]" />
     </article>
   );
 }
@@ -166,7 +168,7 @@ export function HomeScreen() {
         </section>
 
         {/* 6. special offer banner */}
-        <section className="relative mt-[calc(var(--u)*28)] h-[calc(var(--u)*227)] overflow-hidden rounded-[calc(var(--u)*30)] bg-banner">
+        <section className="relative mt-[calc(var(--u)*28)] h-[calc(var(--u)*320)] overflow-hidden rounded-[calc(var(--u)*30)] bg-banner">
           <Image
             src="/images/home-offer.jpg"
             alt="White sneakers and a cap"
@@ -178,10 +180,10 @@ export function HomeScreen() {
             <p className="text-[calc(var(--u)*19)] tracking-[0.14em] text-gold-dark">SPECIAL OFFER</p>
             <h2 className="mt-[calc(var(--u)*6)] font-display text-[calc(var(--u)*50)] leading-[1.03]">Upgrade Your<br />Wardrobe</h2>
             <p className="mt-[calc(var(--u)*12)] text-[calc(var(--u)*25)] text-muted">Get up to <b className="font-semibold text-ink">40% Off</b></p>
-          </div>
-          <Link href="/categories" className="absolute bottom-[calc(var(--u)*24)] left-[calc(var(--u)*270)] flex h-[calc(var(--u)*62)] items-center gap-[calc(var(--u)*14)] rounded-full bg-gold-dark px-[calc(var(--u)*30)] text-[calc(var(--u)*24)] font-medium text-white shadow-md">
+          <Link href="/categories" className="mt-[calc(var(--u)*18)] inline-flex h-[calc(var(--u)*62)] items-center gap-[calc(var(--u)*14)] rounded-full bg-gold-dark px-[calc(var(--u)*30)] text-[calc(var(--u)*24)] font-medium text-white shadow-md">
             Shop Now <ArrowRight className="size-[calc(var(--u)*26)]" />
           </Link>
+          </div>
           <p className="absolute right-[calc(var(--u)*26)] top-[calc(var(--u)*62)] font-display text-[calc(var(--u)*30)] leading-[1.3] text-muted">Style<br />More<br />You</p>
         </section>
 

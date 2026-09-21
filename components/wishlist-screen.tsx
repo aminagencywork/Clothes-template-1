@@ -7,10 +7,10 @@ import { useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronLeft, Heart, Search, ShoppingCart, Trash2, X } from "lucide-react";
 import { BottomNav } from "./bottom-nav";
 import { PhoneFrame } from "./phone-frame";
-import { COLOR_NAMES, sizesFor } from "./product-detail-screen";
 import { useFly } from "./use-fly";
 import { cn } from "@/lib/utils";
 import { addToCart, useCart } from "@/lib/cart";
+import { COLOR_NAMES, sizesFor } from "@/lib/product-options";
 import { discountPercent, products, type Product } from "@/lib/products";
 import { removeFromWishlist, useWishlist } from "@/lib/wishlist";
 

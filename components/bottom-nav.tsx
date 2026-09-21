@@ -37,10 +37,10 @@ export function BottomNav({ active, cartCount = 0 }: { active: string; cartCount
                   on ? "bg-pill text-ink font-medium" : "text-muted",
                 )}
               >
-                <span className="relative">
+                <span className="relative" data-nav-cart={href === "/cart" ? "" : undefined}>
                   <Icon className="size-[calc(var(--u)*42)]" strokeWidth={1.6} fill={on ? "currentColor" : "none"} />
                   {href === "/cart" && cartCount > 0 && (
-                    <span className="absolute -right-[calc(var(--u)*18)] -top-[calc(var(--u)*14)] grid size-[calc(var(--u)*32)] place-items-center rounded-full bg-gold-dark text-[calc(var(--u)*19)] text-white">
+                    <span key={cartCount} className="absolute -right-[calc(var(--u)*18)] -top-[calc(var(--u)*14)] grid size-[calc(var(--u)*32)] place-items-center rounded-full bg-gold-dark text-[calc(var(--u)*19)] text-white animate-[cart-pop_0.45s_cubic-bezier(0.34,1.56,0.64,1)]">
                       {cartCount}
                     </span>
                   )}

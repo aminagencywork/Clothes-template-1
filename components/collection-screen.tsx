@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpDown, LayoutGrid, List, ShoppingCart, SlidersHorizontal } from "lucide-react";
+import { AddToCartButton } from "./add-to-cart-button";
 import { BottomNav } from "./bottom-nav";
 import { FavoriteButton } from "./favorite-button";
 import { PhoneFrame } from "./phone-frame";
@@ -16,6 +17,7 @@ import type { Collection } from "@/lib/collections";
 import { discountPercent, products, type Product } from "@/lib/products";
 import { addToWishlist, removeFromWishlist, useWishlist } from "@/lib/wishlist";
 
+const SHOW_HEADER_CART = false; // header cart icon hidden for now (bottom nav has the cart)
 type Sort = "popular" | "low" | "high" | "newest";
 
 const chipCategory: Record<string, string> = { Women: "Women's", Men: "Men's" };
@@ -65,12 +67,14 @@ export function CollectionScreen({ collection }: { collection: Collection }) {
           </div>
           <div className="flex gap-[calc(var(--u)*16)]">
           <WishlistLink ref={heartRef} className="size-[calc(var(--u)*92)]" />
+          {SHOW_HEADER_CART && (
           <Link href="/cart" aria-label="Cart" className={cn(round, "relative")}>
             <ShoppingCart className="size-[calc(var(--u)*42)]" strokeWidth={1.6} />
             <span className="absolute -right-[calc(var(--u)*8)] -top-[calc(var(--u)*8)] grid size-[calc(var(--u)*42)] place-items-center rounded-full bg-gold-dark text-[calc(var(--u)*22)] text-white">
               {cartCount}
             </span>
           </Link>
+          )}
           </div>
         </header>
 
@@ -144,7 +148,7 @@ export function CollectionScreen({ collection }: { collection: Collection }) {
             {items.map((p) => {
               const off = discountPercent(p);
               return (
-                <article key={p.id} data-card className={cn("overflow-hidden rounded-[calc(var(--u)*22)] bg-white shadow-[0_4px_24px_rgba(60,45,20,0.06)]", list && "flex")}>
+                <article key={p.id} data-card className={cn("relative overflow-hidden rounded-[calc(var(--u)*22)] bg-white shadow-[0_4px_24px_rgba(60,45,20,0.06)]", list && "flex")}>
                   <div className={cn("relative bg-card", list ? "h-[calc(var(--u)*260)] w-[calc(var(--u)*220)] shrink-0" : "h-[calc(var(--u)*300)]")}>
                     <Link href={`/product/${p.id}`} aria-label={p.name} className="absolute inset-0">
                       <Image src={p.image} alt={p.name} fill sizes="200px" className="object-cover object-top" />
@@ -166,6 +170,7 @@ export function CollectionScreen({ collection }: { collection: Collection }) {
                       ))}
                     </div>
                   </div>
+                  <AddToCartButton product={p} className="bottom-[calc(var(--u)*14)] right-[calc(var(--u)*14)] size-[calc(var(--u)*58)] rounded-[calc(var(--u)*16)]" />
                 </article>
               );
             })}

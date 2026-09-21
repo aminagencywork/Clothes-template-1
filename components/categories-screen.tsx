@@ -20,6 +20,7 @@ const icons: Record<CategoryFilter, ComponentType<{ className?: string; strokeWi
 };
 
 const CART_COUNT = 3; // dummy
+const SHOW_HEADER_CART = false; // header cart icon hidden for now (bottom nav has the cart)
 const SHOW_FILTER_ICONS = false; // category icon row hidden for now
 
 export function CategoriesScreen() {
@@ -44,12 +45,14 @@ export function CategoriesScreen() {
           </div>
           <div className="mt-[calc(var(--u)*10)] flex gap-[calc(var(--u)*16)]">
             <WishlistLink className="size-[calc(var(--u)*96)]" />
+          {SHOW_HEADER_CART && (
           <Link href="/cart" aria-label="Cart" className="relative grid size-[calc(var(--u)*96)] place-items-center rounded-full bg-pill/80">
             <ShoppingCart className="size-[calc(var(--u)*44)]" strokeWidth={1.6} />
             <span className="absolute -right-[calc(var(--u)*10)] -top-[calc(var(--u)*8)] grid size-[calc(var(--u)*44)] place-items-center rounded-full bg-gold-dark text-[calc(var(--u)*22)] text-white">
               {CART_COUNT}
             </span>
           </Link>
+          )}
           </div>
         </header>
 
@@ -113,15 +116,15 @@ export function CategoriesScreen() {
         )}
 
         {/* offer */}
-        <section className="relative mt-[calc(var(--u)*24)] h-[calc(var(--u)*206)] overflow-hidden rounded-[calc(var(--u)*24)] bg-[#857a55]">
+        <section className="relative mt-[calc(var(--u)*24)] h-[calc(var(--u)*290)] overflow-hidden rounded-[calc(var(--u)*24)] bg-[#857a55]">
           <div className="absolute left-[calc(var(--u)*34)] top-[calc(var(--u)*26)] text-white">
             <p className="text-[calc(var(--u)*17)] tracking-[0.14em] text-white/80">SPECIAL OFFER</p>
             <h2 className="font-display mt-[calc(var(--u)*6)] text-[calc(var(--u)*48)] leading-[1.05]">Upgrade<br />Your Style</h2>
             <p className="mt-[calc(var(--u)*10)] text-[calc(var(--u)*23)] text-white/90">Get up to 40% Off</p>
-          </div>
-          <Link href="/home" className="absolute bottom-[calc(var(--u)*24)] left-[calc(var(--u)*259)] flex h-[calc(var(--u)*50)] items-center gap-[calc(var(--u)*10)] rounded-full bg-white px-[calc(var(--u)*22)] text-[calc(var(--u)*21)] font-medium">
+          <Link href="/home" className="mt-[calc(var(--u)*18)] inline-flex h-[calc(var(--u)*54)] items-center gap-[calc(var(--u)*10)] rounded-full bg-white px-[calc(var(--u)*26)] text-[calc(var(--u)*22)] font-medium text-ink">
             Shop Now <ArrowRight className="size-[calc(var(--u)*20)]" />
           </Link>
+          </div>
           <Image src="/images/cat-banner.jpg" alt="Model in olive jacket" width={255} height={198} className="absolute bottom-0 left-[calc(var(--u)*462)] h-full w-[calc(var(--u)*255)] object-cover object-top [mask-image:linear-gradient(to_right,transparent,#000_18%)]" />
           <p className="font-display absolute right-[calc(var(--u)*30)] top-[calc(var(--u)*56)] text-[calc(var(--u)*24)] leading-[1.35] text-white/85">Style<br />More<br />You</p>
         </section>

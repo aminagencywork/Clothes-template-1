@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/lib/products";
+import { AddToCartButton } from "./add-to-cart-button";
 import { FavoriteButton } from "./favorite-button";
 
 type Props = { product: Product; liked: boolean; onToggleLike: (id: string) => void };
@@ -9,7 +10,7 @@ type Props = { product: Product; liked: boolean; onToggleLike: (id: string) => v
 /** Compact card used in the horizontal "Popular Collection" row. */
 export function ProductCard({ product, liked, onToggleLike }: Props) {
   return (
-    <article className="w-[calc(var(--u)*290)] shrink-0 snap-start text-center">
+    <article className="relative w-[calc(var(--u)*290)] shrink-0 snap-start text-center">
       <div
         className={cn(
           "relative overflow-hidden rounded-[calc(var(--u)*40)] bg-card",
@@ -33,6 +34,7 @@ export function ProductCard({ product, liked, onToggleLike }: Props) {
           <span key={c} className="size-[calc(var(--u)*34)] rounded-full ring-1 ring-black/5" style={{ background: c }} />
         ))}
       </div>
+      <AddToCartButton product={product} className="bottom-[calc(var(--u)*0)] right-[calc(var(--u)*0)] size-[calc(var(--u)*60)] rounded-[calc(var(--u)*18)]" />
     </article>
   );
 }
