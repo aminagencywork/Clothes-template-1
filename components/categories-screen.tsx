@@ -6,6 +6,7 @@ import { useMemo, useState, type ComponentType } from "react";
 import { ArrowRight, ChevronRight, Footprints, PersonStanding, Search, ShoppingBag, ShoppingCart, Shirt, Smile, User, X } from "lucide-react";
 import { BottomNav } from "./bottom-nav";
 import { PhoneFrame } from "./phone-frame";
+import { WishlistLink } from "./wishlist-link";
 import { cn } from "@/lib/utils";
 import { categoryCards, categoryFilters, type CategoryFilter } from "@/lib/categories";
 
@@ -19,6 +20,7 @@ const icons: Record<CategoryFilter, ComponentType<{ className?: string; strokeWi
 };
 
 const CART_COUNT = 3; // dummy
+const SHOW_FILTER_ICONS = false; // category icon row hidden for now
 
 export function CategoriesScreen() {
   const [filter, setFilter] = useState<CategoryFilter>("All");
@@ -40,12 +42,15 @@ export function CategoriesScreen() {
             <h1 className="font-display text-[calc(var(--u)*72)] leading-none">Categories</h1>
             <p className="mt-[calc(var(--u)*14)] text-[calc(var(--u)*27)] text-muted">Explore our wide range of collections</p>
           </div>
-          <Link href="/cart" aria-label="Cart" className="relative mt-[calc(var(--u)*10)] grid size-[calc(var(--u)*96)] place-items-center rounded-full bg-pill/80">
+          <div className="mt-[calc(var(--u)*10)] flex gap-[calc(var(--u)*16)]">
+            <WishlistLink className="size-[calc(var(--u)*96)]" />
+          <Link href="/cart" aria-label="Cart" className="relative grid size-[calc(var(--u)*96)] place-items-center rounded-full bg-pill/80">
             <ShoppingCart className="size-[calc(var(--u)*44)]" strokeWidth={1.6} />
             <span className="absolute -right-[calc(var(--u)*10)] -top-[calc(var(--u)*8)] grid size-[calc(var(--u)*44)] place-items-center rounded-full bg-gold-dark text-[calc(var(--u)*22)] text-white">
               {CART_COUNT}
             </span>
           </Link>
+          </div>
         </header>
 
         {/* search */}
@@ -66,7 +71,7 @@ export function CategoriesScreen() {
         </label>
 
         {/* filter icons */}
-        <div className="no-scrollbar mt-[calc(var(--u)*30)] flex justify-between gap-[calc(var(--u)*16)] overflow-x-auto px-[calc(var(--u)*15)]">
+        <div hidden={!SHOW_FILTER_ICONS} className="no-scrollbar mt-[calc(var(--u)*30)] flex justify-between gap-[calc(var(--u)*16)] overflow-x-auto px-[calc(var(--u)*15)]">
           {categoryFilters.map((f) => {
             const Icon = icons[f];
             const on = filter === f;
@@ -86,7 +91,7 @@ export function CategoriesScreen() {
           {cards.map((c) => (
             <Link
               key={c.id}
-              href="/home"
+              href={`/collection/${c.id}`}
               className="relative block h-[calc(var(--u)*255)] overflow-hidden rounded-[calc(var(--u)*28)] bg-gradient-to-br from-[#f4efe6] to-[#e7dfd0] shadow-[0_2px_12px_rgba(60,45,20,0.05)] transition-transform active:scale-[0.98]"
             >
               <Image src={c.image} alt="" fill sizes="220px" className="!left-[36%] !w-[64%] object-cover object-top [mask-image:linear-gradient(to_right,transparent,#000_22%)]" />

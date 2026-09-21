@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Expand, Heart, Minus, Plus, Share2, ShoppingCart, Star } from "lucide-react";
@@ -11,7 +12,7 @@ import { addToCart, useCart } from "@/lib/cart";
 import { ProductCard } from "./product-card";
 import { discountPercent, galleryFor, similarProducts, type Product } from "@/lib/products";
 
-const COLOR_NAMES: Record<string, string> = {
+export const COLOR_NAMES: Record<string, string> = {
   "#ffffff": "White", "#b7cde6": "Sky Blue", "#a9c3e6": "Sky Blue", "#e4dccd": "Sand", "#1c2a44": "Navy",
   "#6b7050": "Olive", "#7c8563": "Olive", "#7a2e34": "Burgundy", "#111111": "Black", "#231a10": "Black",
   "#c4c4c0": "Grey", "#dccbb2": "Beige", "#c9b79c": "Taupe", "#f3f0e8": "Ivory", "#dcc8a5": "Sand",
@@ -20,7 +21,7 @@ const COLOR_NAMES: Record<string, string> = {
   "#c8a37a": "Tan", "#b8a58a": "Stone", "#8a8a86": "Steel",
 };
 
-function sizesFor(p: Product) {
+export function sizesFor(p: Product) {
   if (p.category === "Shoes") return ["7", "8", "9", "10", "11"];
   if (p.category === "Accessories") return ["One Size"];
   if (p.category === "Kids") return ["4Y", "6Y", "8Y", "10Y", "12Y"];
@@ -31,6 +32,8 @@ const px = "px-[calc(var(--u)*55)]";
 const round = "grid place-items-center rounded-full bg-pill/80";
 
 export function ProductDetailScreen({ product }: { product: Product }) {
+  const router = useRouter();
+  const goBack = () => (window.history.length > 1 ? router.back() : router.push("/home"));
   const gallery = galleryFor(product);
   const similar = similarProducts(product);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
@@ -120,9 +123,9 @@ export function ProductDetailScreen({ product }: { product: Product }) {
       <main className="pb-[calc(var(--u)*200)] pt-[calc(var(--u)*100)]">
         {/* top bar */}
         <header className="flex items-center justify-between px-[calc(var(--u)*49)]">
-          <Link href="/home" aria-label="Back" className={cn(round, "size-[calc(var(--u)*92)]")}>
+          <button type="button" aria-label="Back" onClick={goBack} className={cn(round, "size-[calc(var(--u)*92)]")}>
             <ChevronLeft className="size-[calc(var(--u)*44)]" strokeWidth={1.6} />
-          </Link>
+          </button>
           <div className="flex gap-[calc(var(--u)*22)]">
             <Link ref={cartBtn} href="/cart" aria-label={`Cart, ${cartCount} items`} className={cn(round, "relative size-[calc(var(--u)*92)]")}>
               <ShoppingCart className="size-[calc(var(--u)*42)]" strokeWidth={1.6} />

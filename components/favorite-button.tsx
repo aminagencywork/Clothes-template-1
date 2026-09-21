@@ -1,7 +1,7 @@
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Props = { liked: boolean; label: string; onClick: () => void; className?: string };
+type Props = { liked: boolean; label: string; onClick: (e: React.MouseEvent<HTMLButtonElement>) => void; className?: string };
 
 export function FavoriteButton({ liked, label, onClick, className }: Props) {
   return (
