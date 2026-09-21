@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Calendar, Camera, Check, ChevronDown, FileText, Mail, Phone, User } from "lucide-react";
 import { PhoneFrame } from "./phone-frame";
-import { DEFAULT_PROFILE, saveProfile, useProfile, type Profile } from "@/lib/profile";
+import { saveProfile, useProfile, type Profile } from "@/lib/profile";
 
 const BIO_MAX = 150;
 const field = "flex items-center gap-[calc(var(--u)*30)] rounded-[calc(var(--u)*22)] border border-black/10 bg-white/80 px-[calc(var(--u)*28)]";
@@ -43,22 +43,15 @@ function toDataUrl(file: File, size = 400): Promise<string> {
 export function EditProfileScreen() {
   const router = useRouter();
   const saved = useProfile();
-  const [form, setForm] = useState<Profile>(DEFAULT_PROFILE);
-  const [ready, setReady] = useState(false);
+  // Edits live in `draft`; until the first edit the form simply mirrors the saved profile.
+  const [draft, setDraft] = useState<Profile | null>(null);
+  const form = draft ?? saved;
   const [phoneEditable, setPhoneEditable] = useState(false);
   const [done, setDone] = useState(false);
   const phoneRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // localStorage is only readable after mount; load the saved profile into the form once.
-  useEffect(() => {
-    if (!ready) {
-      setForm(saved);
-      setReady(true);
-    }
-  }, [saved, ready]);
-
-  const set = <K extends keyof Profile>(k: K, v: Profile[K]) => setForm((f) => ({ ...f, [k]: v }));
+  const set = <K extends keyof Profile>(k: K, v: Profile[K]) => setDraft({ ...form, [k]: v });
   const dobLabel = form.dob ? new Date(`${form.dob}T00:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "Select date";
   const valid = form.name.trim().length > 1 && form.phone.replace(/\D/g, "").length >= 8;
 

@@ -9,6 +9,9 @@ export type Order = {
   /** delivered / expected / cancelled date, depending on status */
   statusDate: string;
   items: { productId: string; qty: number }[];
+  /** set on orders placed through checkout; older sample orders use the default 10% / $8 */
+  discount?: number;
+  shipping?: number;
 };
 
 export const orders: Order[] = [

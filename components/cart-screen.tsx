@@ -124,11 +124,11 @@ export function CartScreen() {
               </div>
             </section>
 
-            <button type="button" className="mt-[calc(var(--u)*17)] flex h-[calc(var(--u)*88)] w-full items-center justify-center gap-[calc(var(--u)*26)] rounded-[calc(var(--u)*24)] bg-gold-dark text-[calc(var(--u)*30)] text-white transition-transform active:scale-[0.99]">
+            <Link href="/checkout/address" className="mt-[calc(var(--u)*17)] flex h-[calc(var(--u)*88)] w-full items-center justify-center gap-[calc(var(--u)*26)] rounded-[calc(var(--u)*24)] bg-gold-dark text-[calc(var(--u)*30)] text-white transition-transform active:scale-[0.99]">
               <Lock className="size-[calc(var(--u)*40)]" strokeWidth={1.5} />
               Proceed to Checkout
               <ArrowRight className="size-[calc(var(--u)*36)]" strokeWidth={1.6} />
-            </button>
+            </Link>
             <p className="mt-[calc(var(--u)*20)] flex items-center justify-center gap-[calc(var(--u)*16)] text-[calc(var(--u)*23)] text-muted">
               <ShieldCheck className="size-[calc(var(--u)*36)] text-ink" strokeWidth={1.4} />
               Secure and encrypted payment

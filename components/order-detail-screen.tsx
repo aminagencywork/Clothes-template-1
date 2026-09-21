@@ -37,8 +37,9 @@ function timeline(o: Order): { label: string; date?: string; done: boolean }[] {
 export function OrderDetailScreen({ order }: { order: Order }) {
   const lines = orderLines(order);
   const subtotal = orderTotal(order);
-  const discount = subtotal * DISCOUNT_RATE;
-  const total = subtotal - discount + SHIPPING;
+  const discount = order.discount ?? subtotal * DISCOUNT_RATE;
+  const shipping = order.shipping ?? SHIPPING;
+  const total = subtotal - discount + shipping;
   const n = orderCount(order);
   const steps = timeline(order);
   const first = lines[0]?.product;
@@ -131,7 +132,7 @@ export function OrderDetailScreen({ order }: { order: Order }) {
           <dl className="mt-[calc(var(--u)*8)] text-[calc(var(--u)*27)]">
             <div className="flex justify-between py-[calc(var(--u)*7)]"><dt className="text-muted">Subtotal ({n} {n === 1 ? "item" : "items"})</dt><dd>{money(subtotal)}</dd></div>
             <div className="flex justify-between py-[calc(var(--u)*7)]"><dt className="text-muted">Discount</dt><dd className="text-[#3f7a4a]">-{money(discount)}</dd></div>
-            <div className="flex justify-between py-[calc(var(--u)*7)]"><dt className="text-muted">Shipping</dt><dd>{money(SHIPPING)}</dd></div>
+            <div className="flex justify-between py-[calc(var(--u)*7)]"><dt className="text-muted">Shipping</dt><dd>{money(shipping)}</dd></div>
           </dl>
           <div className="mt-[calc(var(--u)*10)] flex items-center justify-between border-t border-black/[0.07] pt-[calc(var(--u)*18)]">
             <span className="text-[calc(var(--u)*33)] font-semibold">{order.status === "Cancelled" ? "Refund total" : "Total"}</span>

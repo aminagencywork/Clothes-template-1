@@ -8,7 +8,8 @@ import { BottomNav } from "./bottom-nav";
 import { PhoneFrame } from "./phone-frame";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
-import { formatDate, orderCount, orderLines, orderTotal, orders, type OrderStatus } from "@/lib/orders";
+import { formatDate, orderCount, orderLines, orderTotal, orders as sampleOrders, type OrderStatus } from "@/lib/orders";
+import { usePlacedOrders } from "@/lib/placed-orders";
 
 const STATUSES: OrderStatus[] = ["Processing", "Shipped", "Delivered", "Cancelled"];
 
@@ -32,6 +33,8 @@ const round = "grid place-items-center rounded-full bg-pill/80";
 
 export function OrdersScreen() {
   const cart = useCart();
+  const placed = usePlacedOrders();
+  const orders = useMemo(() => [...placed, ...sampleOrders], [placed]);
   const cartCount = cart.reduce((n, i) => n + i.qty, 0);
   const [tab, setTab] = useState<"All" | OrderStatus>("All");
   const [query, setQuery] = useState("");
@@ -60,7 +63,7 @@ export function OrdersScreen() {
       if (sort === "low") return orderTotal(a) - orderTotal(b);
       return b.placed.localeCompare(a.placed);
     });
-  }, [tab, query, sort]);
+  }, [orders, tab, query, sort]);
 
   return (
     <PhoneFrame>
