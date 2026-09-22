@@ -3,9 +3,11 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type ReactNode } from "react";
-import { ArrowLeft, ArrowRight, Calendar, Camera, Check, ChevronDown, FileText, Mail, Phone, User } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calendar, Check, ChevronDown, FileText, Mail, Phone, User } from "lucide-react";
 import { PhoneFrame } from "./phone-frame";
+import { ProfileAvatar } from "./profile-bits";
 import { saveProfile, useProfile, type Profile } from "@/lib/profile";
+import { AMBER, FOREST } from "@/lib/theme";
 
 const BIO_MAX = 150;
 const field = "flex items-center gap-[calc(var(--u)*30)] rounded-[calc(var(--u)*22)] border border-black/10 bg-white/80 px-[calc(var(--u)*28)]";
@@ -21,25 +23,6 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-/** Downscale a picked photo so it fits comfortably in localStorage. */
-function toDataUrl(file: File, size = 400): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new window.Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const scale = Math.min(1, size / Math.max(img.width, img.height));
-      const c = document.createElement("canvas");
-      c.width = Math.round(img.width * scale);
-      c.height = Math.round(img.height * scale);
-      c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
-      URL.revokeObjectURL(url);
-      resolve(c.toDataURL("image/jpeg", 0.85));
-    };
-    img.onerror = reject;
-    img.src = url;
-  });
-}
-
 export function EditProfileScreen() {
   const router = useRouter();
   const saved = useProfile();
@@ -49,18 +32,10 @@ export function EditProfileScreen() {
   const [phoneEditable, setPhoneEditable] = useState(false);
   const [done, setDone] = useState(false);
   const phoneRef = useRef<HTMLInputElement>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const set = <K extends keyof Profile>(k: K, v: Profile[K]) => setDraft({ ...form, [k]: v });
   const dobLabel = form.dob ? new Date(`${form.dob}T00:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "Select date";
   const valid = form.name.trim().length > 1 && form.phone.replace(/\D/g, "").length >= 8;
-
-  const onPhoto = async (f?: File) => {
-    if (!f) return;
-    try {
-      set("photo", await toDataUrl(f));
-    } catch {}
-  };
 
   const save = () => {
     if (!valid) return;
@@ -85,16 +60,10 @@ export function EditProfileScreen() {
 
         <section className="relative mt-[calc(var(--u)*34)] flex h-[calc(var(--u)*250)] items-center overflow-hidden rounded-[calc(var(--u)*30)] bg-gradient-to-br from-[#f4efe6] to-[#ebe3d3] px-[calc(var(--u)*28)]">
           <div className="relative size-[calc(var(--u)*204)] shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={form.photo} alt={form.name} className="size-full rounded-full border-[calc(var(--u)*4)] border-white object-cover" />
-            <button type="button" aria-label="Change photo" onClick={() => fileRef.current?.click()} className="absolute bottom-0 right-0 grid size-[calc(var(--u)*62)] place-items-center rounded-full bg-gold-dark text-white shadow">
-              <Camera className="size-[calc(var(--u)*32)]" strokeWidth={1.7} />
-            </button>
-            <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => onPhoto(e.target.files?.[0])} />
+            <ProfileAvatar className="size-full rounded-full border-[calc(var(--u)*4)] border-white object-cover" />
           </div>
           <div className="ml-[calc(var(--u)*56)] min-w-0">
             <h2 className="font-display truncate text-[calc(var(--u)*42)] leading-tight">{form.name || "Your name"}</h2>
-            <p className="mt-[calc(var(--u)*10)] text-[calc(var(--u)*27)] text-muted">Update your photo</p>
           </div>
           <p className="font-display absolute right-[calc(var(--u)*40)] top-[calc(var(--u)*50)] text-[calc(var(--u)*34)] italic leading-[1.25] text-muted/80">Good<br />Style<br />Better<br />You</p>
         </section>
@@ -127,7 +96,8 @@ export function EditProfileScreen() {
                 setPhoneEditable(true);
                 setTimeout(() => phoneRef.current?.focus(), 0);
               }}
-              className="rounded-[calc(var(--u)*18)] border border-gold-dark px-[calc(var(--u)*30)] py-[calc(var(--u)*12)] text-[calc(var(--u)*27)] font-medium text-gold-dark"
+              className="rounded-[calc(var(--u)*18)] border px-[calc(var(--u)*30)] py-[calc(var(--u)*12)] text-[calc(var(--u)*27)] font-medium"
+              style={{ borderColor: AMBER, color: AMBER }}
             >
               Change
             </button>
@@ -168,7 +138,8 @@ export function EditProfileScreen() {
           type="button"
           onClick={save}
           disabled={!valid || done}
-          className="mt-[calc(var(--u)*30)] flex h-[calc(var(--u)*100)] w-full items-center justify-center gap-[calc(var(--u)*20)] rounded-[calc(var(--u)*24)] bg-gold-dark text-[calc(var(--u)*32)] font-medium text-white transition-opacity disabled:opacity-60"
+          className="mt-[calc(var(--u)*30)] flex h-[calc(var(--u)*100)] w-full items-center justify-center gap-[calc(var(--u)*20)] rounded-[calc(var(--u)*24)] text-[calc(var(--u)*32)] font-medium text-white transition-opacity disabled:opacity-60"
+          style={{ background: FOREST }}
         >
           {done ? <>Saved <Check className="size-[calc(var(--u)*38)]" /></> : <>Save Changes <ArrowRight className="size-[calc(var(--u)*38)]" /></>}
         </button>

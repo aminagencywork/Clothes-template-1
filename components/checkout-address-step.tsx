@@ -3,11 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Plus } from "lucide-react";
-import { CheckoutShell, Radio, card, editLink, primaryBtn } from "./checkout-shell";
+import { CheckoutShell, Radio, card, editLink, primaryBtn, primaryBtnStyle } from "./checkout-shell";
+import { FOREST } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { addressLines, patchCheckout, saveAddress, useAddresses, useCheckout, type Address } from "@/lib/checkout";
 
-const input = "h-[calc(var(--u)*80)] w-full rounded-[calc(var(--u)*18)] border border-black/10 bg-white/80 px-[calc(var(--u)*24)] text-[calc(var(--u)*27)] outline-none focus:border-gold-dark";
+const input = "h-[calc(var(--u)*80)] w-full rounded-[calc(var(--u)*18)] border border-black/10 bg-white/80 px-[calc(var(--u)*24)] text-[calc(var(--u)*27)] outline-none focus:border-[#3a4a2e]";
 const EMPTY: Address = { id: "", label: "Home", name: "", line1: "", line2: "", city: "", state: "", pin: "", country: "India" };
 
 function AddressForm({ initial, onDone }: { initial: Address; onDone: (saved?: Address) => void }) {
@@ -42,12 +43,12 @@ function AddressForm({ initial, onDone }: { initial: Address; onDone: (saved?: A
         <input value={a.country} onChange={(e) => set("country", e.target.value)} placeholder="Country" aria-label="Country" className={input} />
       </div>
       <label className="flex items-center gap-[calc(var(--u)*16)] text-[calc(var(--u)*25)]">
-        <input type="checkbox" checked={!!a.isDefault} onChange={(e) => set("isDefault", e.target.checked)} className="size-[calc(var(--u)*32)] accent-[#7a5a2e]" />
+        <input type="checkbox" checked={!!a.isDefault} onChange={(e) => set("isDefault", e.target.checked)} className="size-[calc(var(--u)*32)] accent-[#3a4a2e]" />
         Make this my default address
       </label>
       <div className="flex gap-[calc(var(--u)*16)] pt-[calc(var(--u)*6)]">
         <button type="button" onClick={() => onDone()} className="h-[calc(var(--u)*88)] flex-1 rounded-[calc(var(--u)*22)] border border-black/15 text-[calc(var(--u)*27)]">Cancel</button>
-        <button type="button" onClick={save} disabled={!valid} className="h-[calc(var(--u)*88)] flex-1 rounded-[calc(var(--u)*22)] bg-gold-dark text-[calc(var(--u)*27)] text-white disabled:opacity-50">Save Address</button>
+        <button type="button" onClick={save} disabled={!valid} className="h-[calc(var(--u)*88)] flex-1 rounded-[calc(var(--u)*22)] text-[calc(var(--u)*27)] text-white disabled:opacity-50" style={{ background: FOREST }}>Save Address</button>
       </div>
     </div>
   );
@@ -66,7 +67,7 @@ export function CheckoutAddressStep() {
     <CheckoutShell step={1} back={() => router.push("/cart")}>
       <div className="flex items-center justify-between">
         <h2 className="font-display text-[calc(var(--u)*38)]">Saved Addresses</h2>
-        <button type="button" onClick={() => setEditing(EMPTY)} className="flex items-center gap-[calc(var(--u)*8)] text-[calc(var(--u)*27)] text-gold-dark">
+        <button type="button" onClick={() => setEditing(EMPTY)} className="flex items-center gap-[calc(var(--u)*8)] text-[calc(var(--u)*27)]" style={{ color: FOREST }}>
           <Plus className="size-[calc(var(--u)*30)]" strokeWidth={1.8} /> Add New
         </button>
       </div>
@@ -93,7 +94,8 @@ export function CheckoutAddressStep() {
               tabIndex={0}
               onClick={() => patchCheckout({ addressId: a.id })}
               onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), patchCheckout({ addressId: a.id }))}
-              className={cn(card, "flex cursor-pointer gap-[calc(var(--u)*22)] border p-[calc(var(--u)*28)] transition-colors", on ? "border-gold-dark/40 bg-pill/80" : "border-transparent")}
+              className={cn(card, "flex cursor-pointer gap-[calc(var(--u)*22)] border p-[calc(var(--u)*28)] transition-colors", on ? "bg-pill/80" : "border-transparent")}
+              style={on ? { borderColor: "rgba(58,74,46,0.4)" } : undefined}
             >
               <div className="pt-[calc(var(--u)*6)]"><Radio on={on} /></div>
               <div className="min-w-0 flex-1 text-[calc(var(--u)*26)] leading-[1.5] text-muted">
@@ -129,6 +131,7 @@ export function CheckoutAddressStep() {
           router.push("/checkout/delivery");
         }}
         className={cn(primaryBtn, "mt-[calc(var(--u)*30)]")}
+        style={primaryBtnStyle}
       >
         Continue to Delivery <ArrowRight className="size-[calc(var(--u)*34)]" strokeWidth={1.6} />
       </button>

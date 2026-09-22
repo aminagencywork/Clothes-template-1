@@ -3,12 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Banknote, Check, ChevronDown, CreditCard, Landmark, Smartphone, Tag, Wallet, X, type LucideIcon } from "lucide-react";
-import { CheckoutShell, Radio, card, primaryBtn } from "./checkout-shell";
+import { CheckoutShell, Radio, card, primaryBtn, primaryBtnStyle } from "./checkout-shell";
+import { FOREST } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { BANKS, COUPONS, PAYMENTS, WALLETS, money, patchCheckout, useCheckout, useCheckoutTotals, type PaymentId } from "@/lib/checkout";
 
 const ICONS: Record<PaymentId, LucideIcon> = { upi: Smartphone, card: CreditCard, netbanking: Landmark, wallet: Wallet, cod: Banknote };
-const input = "h-[calc(var(--u)*76)] w-full rounded-[calc(var(--u)*16)] border border-black/10 bg-white px-[calc(var(--u)*22)] text-[calc(var(--u)*26)] outline-none focus:border-gold-dark";
+const input = "h-[calc(var(--u)*76)] w-full rounded-[calc(var(--u)*16)] border border-black/10 bg-white px-[calc(var(--u)*22)] text-[calc(var(--u)*26)] outline-none focus:border-[#3a4a2e]";
 
 export function CheckoutPaymentStep() {
   const router = useRouter();
@@ -56,7 +57,7 @@ export function CheckoutPaymentStep() {
           const on = s.payment === p.id;
           const Icon = ICONS[p.id];
           return (
-            <div key={p.id} className={cn(card, "border px-[calc(var(--u)*26)] py-[calc(var(--u)*24)] transition-colors", on ? "border-gold-dark/40 bg-pill/80" : "border-transparent")}>
+            <div key={p.id} className={cn(card, "border px-[calc(var(--u)*26)] py-[calc(var(--u)*24)] transition-colors", on ? "bg-pill/80" : "border-transparent")} style={on ? { borderColor: "rgba(58,74,46,0.4)" } : undefined}>
               <div
                 role="radio"
                 aria-checked={on}
@@ -111,7 +112,7 @@ export function CheckoutPaymentStep() {
       <div className={cn(card, "mt-[calc(var(--u)*16)] flex h-[calc(var(--u)*84)] items-center gap-[calc(var(--u)*18)] pl-[calc(var(--u)*22)] pr-[calc(var(--u)*10)]")}>
         <Tag className="size-[calc(var(--u)*34)] shrink-0" strokeWidth={1.5} />
         <input value={code} onChange={(e) => { setCode(e.target.value); setCouponMsg(""); }} onKeyDown={(e) => e.key === "Enter" && applyCoupon()} placeholder="Enter coupon code" aria-label="Coupon code" className="min-w-0 flex-1 bg-transparent text-[calc(var(--u)*25)] uppercase outline-none placeholder:normal-case placeholder:text-muted" />
-        <button type="button" onClick={applyCoupon} className="h-[calc(var(--u)*64)] rounded-[calc(var(--u)*16)] bg-pill px-[calc(var(--u)*36)] text-[calc(var(--u)*25)]">Apply</button>
+        <button type="button" onClick={applyCoupon} className="h-[calc(var(--u)*64)] rounded-[calc(var(--u)*16)] px-[calc(var(--u)*36)] text-[calc(var(--u)*25)] text-white" style={{ background: FOREST }}>Apply</button>
       </div>
       {couponMsg && <p role="alert" className="mt-[calc(var(--u)*12)] text-[calc(var(--u)*24)] text-[#a8322f]">{couponMsg}</p>}
       {s.coupon && (
@@ -127,7 +128,7 @@ export function CheckoutPaymentStep() {
 
       {error && <p role="alert" className="mt-[calc(var(--u)*20)] text-[calc(var(--u)*25)] text-[#a8322f]">{error}</p>}
 
-      <button type="button" onClick={next} className={cn(primaryBtn, "mt-[calc(var(--u)*24)]")}>
+      <button type="button" onClick={next} className={cn(primaryBtn, "mt-[calc(var(--u)*24)]")} style={primaryBtnStyle}>
         Continue to Review <ArrowRight className="size-[calc(var(--u)*34)]" strokeWidth={1.6} />
       </button>
     </CheckoutShell>

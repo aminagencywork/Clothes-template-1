@@ -1,39 +1,35 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { PaginationDots } from "./pagination-dots";
+import { cn } from "@/lib/utils";
 
-// All positions are in design pixels (941 x 1672), scaled by --u.
-const abs = "absolute";
-const INTERVAL_MS = 4000;
+const INTERVAL_MS = 5000;
+const FOREST = "#3a4a2e";
 
 const slides = [
   {
-    photos: [
-      { src: "/images/slide1-photo-1.jpg", alt: "Model in burgundy shirt" },
-      { src: "/images/slide1-photo-2.jpg", alt: "Woman in knit sweater" },
-    ],
-    words: ["Find", "new season", "Fresh Looks", "for every", "Mood"],
+    id: "men",
+    image: "/images/onb-men.jpg",
+    alt: "Men's Collection — Style Moves With You",
+    href: "/collection/men",
   },
   {
-    photos: [
-      { src: "/images/onboarding-photo-1.jpg", alt: "Model in olive shirt and cream trousers" },
-      { src: "/images/onboarding-photo-2.jpg", alt: "Model in white linen shirt" },
-    ],
-    words: ["Start", "finding your", "Version the", "best fashion", "Style"],
+    id: "women",
+    image: "/images/onb-women.jpg",
+    alt: "Women's Collection — Confidence Looks Good On You",
+    href: "/collection/women",
   },
   {
-    photos: [
-      { src: "/images/slide3-photo-1.jpg", alt: "Model in blue shirt and chinos" },
-      { src: "/images/slide3-photo-2.jpg", alt: "Child in cream sweatshirt" },
-    ],
-    words: ["Shop", "your favorite", "Timeless Fit", "made for", "You"],
+    id: "new",
+    image: "/images/onb-new.jpg",
+    alt: "New Arrivals — Fresh Styles New Stories",
+    href: "/collection/new",
   },
 ];
-
-const cardBase = `${abs} overflow-hidden rounded-[calc(var(--u)*50)] bg-card`;
 
 export function OnboardingScreen() {
   const [active, setActive] = useState(0);
@@ -46,81 +42,63 @@ export function OnboardingScreen() {
   return (
     <div className="flex min-h-dvh justify-center bg-page">
       <main
-        className="relative w-full max-w-[430px] overflow-hidden bg-page [container-type:inline-size]"
-        style={{ ["--u" as string]: "calc(100cqw / 941)", aspectRatio: "941 / 1672" }}
+        className="relative w-full max-w-[430px] bg-page pb-[calc(var(--u)*60)] [container-type:inline-size]"
+        style={{ ["--u" as string]: "calc(100cqw / 941)" }}
       >
         {/* background blobs */}
-        <div className={`${abs} rounded-[50%] bg-blob left-[calc(var(--u)*-140)] top-[calc(var(--u)*1160)] h-[calc(var(--u)*520)] w-[calc(var(--u)*380)] rotate-[-12deg]`} />
-        <div className={`${abs} rounded-[50%] bg-blob left-[calc(var(--u)*770)] top-[calc(var(--u)*1360)] h-[calc(var(--u)*420)] w-[calc(var(--u)*330)]`} />
+        <div className="pointer-events-none absolute -left-[calc(var(--u)*90)] top-[calc(var(--u)*120)] size-[calc(var(--u)*260)] rounded-full opacity-70" style={{ background: "#eef1e4" }} aria-hidden />
+        <div className="pointer-events-none absolute -right-[calc(var(--u)*70)] top-[calc(var(--u)*700)] size-[calc(var(--u)*220)] rounded-full opacity-60" style={{ background: "#eef1e4" }} aria-hidden />
 
-        {/* scribble */}
-        <svg className={`${abs} left-0 top-[calc(var(--u)*1180)] w-[calc(var(--u)*250)]`} viewBox="0 0 250 500" fill="none" stroke="var(--color-ink)" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
-          <path d="M0 105 C60 100 130 70 100 25 C70 -10 20 40 60 75 C100 100 130 60 100 30 C80 10 60 20 90 40 C130 70 110 110 60 130 C40 140 15 145 0 150" />
-          <path d="M0 180 C60 200 130 230 190 290 C240 350 240 440 170 470 C130 490 100 470 110 440" />
-          <path d="M0 230 C60 260 120 330 130 420 C135 460 120 490 100 500" />
-        </svg>
+        {/* header */}
+        <header className="relative flex items-center justify-center px-[calc(var(--u)*36)] pt-[calc(var(--u)*36)]">
+          <Image src="/images/navbar-logo.png" alt="Vyntra – wear a brighter you" width={900} height={519} priority className="h-[calc(var(--u)*96)] w-auto" />
+          <Link href="/home" className="absolute right-[calc(var(--u)*36)] border-b border-ink/50 pb-[calc(var(--u)*2)] text-[calc(var(--u)*26)] text-ink">
+            Skip
+          </Link>
+        </header>
 
-        {/* content is shifted down to make room for the logo */}
-        <div className="absolute inset-0 translate-y-[calc(var(--u)*80)]">
-        {/* slides: photo cards */}
-        {slides.map((slide, i) => (
-          <div key={i} className={`transition-opacity duration-700 ${i === active ? "opacity-100" : "opacity-0"}`} aria-hidden={i !== active}>
-            <div className={`${cardBase} left-[calc(var(--u)*-20)] top-[calc(var(--u)*100)] h-[calc(var(--u)*545)] w-[calc(var(--u)*415)] rotate-[-8deg]`}>
-              <Image src={slide.photos[0].src} alt={slide.photos[0].alt} fill sizes="430px" priority={i < 2} className={i === 1 ? "object-cover object-[35%_50%]" : "object-cover object-top"} />
-            </div>
-            <div className={`${cardBase} left-[calc(var(--u)*390)] top-[calc(var(--u)*230)] h-[calc(var(--u)*545)] w-[calc(var(--u)*470)] rotate-[8deg]`}>
-              <Image src={slide.photos[1].src} alt={slide.photos[1].alt} fill sizes="430px" priority={i < 2} className="object-cover" />
-            </div>
-          </div>
-        ))}
-
-        {/* dashes */}
-        <svg className={`${abs} left-[calc(var(--u)*735)] top-[calc(var(--u)*170)] w-[calc(var(--u)*130)]`} viewBox="0 0 130 100" stroke="var(--color-dash)" strokeWidth="6" strokeLinecap="round" aria-hidden>
-          <path d="M22 6h26M56 6h6M12 30h16M40 28h24M70 26h30M8 50h20M40 52h20M76 50h30M30 72h28M68 72h24M56 94h16M84 94h12" />
-        </svg>
-
-        {/* headline */}
-        {slides.map((slide, i) => {
-          const [w1, w2, w3, w4, w5] = slide.words;
-          return (
-            <h1
-              key={i}
+        {/* slides: card artwork (photo + copy baked in from the design) */}
+        <div className="relative mx-auto mt-[calc(var(--u)*110)] w-[calc(var(--u)*760)] overflow-hidden rounded-[calc(var(--u)*46)] shadow-[0_20px_50px_rgba(35,45,25,0.18)]" style={{ aspectRatio: "41 / 63" }}>
+          {slides.map((s, i) => (
+            <Link
+              key={s.id}
+              href={s.href}
+              className={cn("absolute inset-0 block transition-opacity duration-700", i === active ? "opacity-100" : "pointer-events-none opacity-0")}
+              tabIndex={i === active ? 0 : -1}
               aria-hidden={i !== active}
-              className={`font-display text-ink absolute left-0 top-[calc(var(--u)*780)] w-full font-normal leading-none transition-opacity duration-700 ${i === active ? "opacity-100" : "opacity-0"}`}
             >
-              <span className={`${abs} left-[calc(var(--u)*175)] top-[calc(var(--u)*10)] whitespace-nowrap text-[calc(var(--u)*118)]`}>{w1}</span>
-              <span className={`${abs} left-[calc(var(--u)*492)] top-[calc(var(--u)*75)] whitespace-nowrap text-[calc(var(--u)*56)]`}>{w2}</span>
-              <span className={`${abs} left-[calc(var(--u)*105)] top-[calc(var(--u)*150)] whitespace-nowrap text-[calc(var(--u)*118)]`}>{w3}</span>
-              <span className={`${abs} left-[calc(var(--u)*248)] top-[calc(var(--u)*318)] whitespace-nowrap text-[calc(var(--u)*56)]`}>{w4}</span>
-              <span className={`${abs} left-[calc(var(--u)*578)] top-[calc(var(--u)*275)] whitespace-nowrap text-[calc(var(--u)*118)]`}>{w5}</span>
-            </h1>
-          );
-        })}
+              <Image src={s.image} alt={s.alt} fill sizes="(min-width: 430px) 400px, 90vw" priority={i === 0} className="object-cover" />
+            </Link>
+          ))}
+        </div>
 
         {/* dots */}
-        <div className={`${abs} left-[calc(var(--u)*408)] top-[calc(var(--u)*1307)]`}>
+        <div className="mt-[calc(var(--u)*28)] flex justify-center">
           <PaginationDots count={slides.length} active={active} onSelect={setActive} />
         </div>
 
         {/* CTA */}
         <Link
           href="/home"
-          className={`${abs} left-[calc(var(--u)*290)] top-[calc(var(--u)*1400)] block h-[calc(var(--u)*170)] w-[calc(var(--u)*360)] transition-transform active:scale-95`}
+          className="mx-auto mt-[calc(var(--u)*120)] flex h-[calc(var(--u)*100)] w-fit items-center gap-[calc(var(--u)*26)] rounded-full pl-[calc(var(--u)*48)] pr-[calc(var(--u)*10)] shadow-[0_10px_26px_rgba(58,74,46,0.28)] transition-transform active:scale-[0.98]"
+          style={{ background: FOREST }}
         >
-          <svg className="absolute inset-0 size-full" viewBox="0 0 360 170" aria-hidden>
-            <path d="M10 60 C10 20 120 5 200 8 C290 10 350 30 350 85 C350 130 280 150 190 152 C90 155 10 130 10 60Z" fill="var(--color-cta)" />
-            <path d="M28 85 C20 30 110 15 220 20 C320 24 350 40 342 80" fill="none" stroke="var(--color-ink)" strokeWidth="2.5" strokeLinecap="round" />
-            <path d="M28 85 C30 130 60 150 100 152" fill="none" stroke="var(--color-ink)" strokeWidth="2.5" strokeLinecap="round" />
-            <path d="M28 160 C90 168 180 166 245 150" fill="none" stroke="var(--color-ink)" strokeWidth="2.5" strokeLinecap="round" />
-          </svg>
-          <span className="font-display text-ink absolute inset-0 flex items-center justify-center pb-[calc(var(--u)*12)] text-[calc(var(--u)*50)]">
-            Get Started
+          <span className="font-display text-[calc(var(--u)*32)] text-page">Get Started</span>
+          <span className="grid size-[calc(var(--u)*80)] shrink-0 place-items-center rounded-full bg-page" style={{ color: FOREST }}>
+            <ArrowRight className="size-[calc(var(--u)*32)]" strokeWidth={1.8} />
           </span>
         </Link>
-        </div>
 
-        {/* logo */}
-        <Image src="/images/navbar-logo.png" alt="Vyntra – wear a brighter you" width={900} height={519} priority className={`${abs} left-1/2 top-[calc(var(--u)*30)] z-10 h-[calc(var(--u)*150)] w-auto -translate-x-1/2`} />
+        {/* footer */}
+        <div className="mt-[calc(var(--u)*90)] flex items-end justify-between px-[calc(var(--u)*34)]">
+          <div className="flex items-center gap-[calc(var(--u)*10)]">
+            <svg className="size-[calc(var(--u)*46)]" viewBox="0 0 46 46" fill="none" style={{ color: FOREST }} aria-hidden>
+              <path d="M23 42 C23 26 15 18 6 14 C14 16 22 22 23 34 C24 22 32 16 40 14 C31 18 23 26 23 42Z" fill="currentColor" opacity="0.85" />
+            </svg>
+            <p className="font-script text-[calc(var(--u)*34)] leading-[0.9] text-ink">More Than<br />Fashion</p>
+          </div>
+          <p className="pb-[calc(var(--u)*4)] text-right text-[calc(var(--u)*17)] leading-[1.5] tracking-[0.14em] text-muted">STYLE TODAY<br />A BRIGHTER TOMORROW</p>
+        </div>
       </main>
     </div>
   );

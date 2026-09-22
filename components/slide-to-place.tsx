@@ -98,13 +98,13 @@ export function SlideToPlace({ onConfirm, disabled }: Props) {
       className={cn(
         "relative mt-[calc(var(--u)*26)] h-[calc(var(--u)*100)] select-none rounded-full transition-colors duration-500",
         disabled && !done && "opacity-60",
-        done ? "bg-[#2c4438] shadow-[0_6px_20px_rgba(44,68,56,0.35)]" : "bg-gradient-to-r from-[#8a7440] to-[#4f4326]",
+        done ? "bg-[#2c4438] shadow-[0_6px_20px_rgba(44,68,56,0.35)]" : "bg-gradient-to-r from-[#4a5c3a] to-[#2c3822]",
       )}
       style={{ touchAction: "none" }}
     >
       {!done && (
         <>
-          <div ref={fillRef} className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#b8923f] to-[#e6c26f]" style={{ width: "50%" }} />
+          <div ref={fillRef} className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#6f8a52] to-[#a3c47a]" style={{ width: "50%" }} />
           <span ref={hintRef} className="pointer-events-none absolute inset-0 flex items-center justify-center pl-[calc(var(--u)*60)] text-[calc(var(--u)*26)] text-white/90">
             Slide right to place order
           </span>
@@ -142,7 +142,7 @@ export function SlideToPlace({ onConfirm, disabled }: Props) {
             <span
               key={i}
               aria-hidden
-              className="absolute top-1/2 h-[calc(var(--u)*5)] w-[calc(var(--u)*16)] rounded-full bg-[#c9a24f] opacity-0"
+              className="absolute top-1/2 h-[calc(var(--u)*5)] w-[calc(var(--u)*16)] rounded-full bg-[#a3c47a] opacity-0"
               style={{
                 [t.s]: 0,
                 transform: `translate(0, -50%) rotate(${t.r}deg)`,

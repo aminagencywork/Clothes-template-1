@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Gloock } from "next/font/google";
+import { Caveat, DM_Sans, Gloock } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
 
@@ -11,6 +11,11 @@ const gloock = Gloock({
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
+  subsets: ["latin"],
+});
+
+const caveat = Caveat({
+  variable: "--font-caveat",
   subsets: ["latin"],
 });
 
@@ -34,7 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${gloock.variable} ${dmSans.variable} font-sans h-full antialiased`}
+      className={`${gloock.variable} ${dmSans.variable} ${caveat.variable} font-sans h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

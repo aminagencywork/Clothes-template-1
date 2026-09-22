@@ -1,14 +1,15 @@
 "use client";
 
-import { useProfile, type Profile } from "@/lib/profile";
+import Image from "next/image";
+import { PROFILE_PHOTO, useProfile, type Profile } from "@/lib/profile";
 
 /** Live profile values for the (server-rendered) profile screen. */
 export function ProfileText({ field }: { field: "name" | "email" | "phone" }) {
   return <>{useProfile()[field as keyof Profile]}</>;
 }
 
+/** The profile picture: always the brand logo, not user-changeable. */
 export function ProfileAvatar({ className }: { className?: string }) {
-  const { photo, name } = useProfile();
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={photo} alt={name} className={className} />;
+  const { name } = useProfile();
+  return <Image src={PROFILE_PHOTO} alt={name} width={204} height={204} className={className} />;
 }

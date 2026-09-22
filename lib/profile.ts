@@ -2,7 +2,10 @@
 
 import { useSyncExternalStore } from "react";
 
-export type Profile = { name: string; email: string; phone: string; dob: string; gender: string; bio: string; photo: string };
+export type Profile = { name: string; email: string; phone: string; dob: string; gender: string; bio: string };
+
+/** The profile picture is fixed to the brand logo everywhere — it isn't user-changeable. */
+export const PROFILE_PHOTO = "/images/profile-logo.jpg";
 
 export const DEFAULT_PROFILE: Profile = {
   name: "Ibrahim Popatiya",
@@ -11,7 +14,6 @@ export const DEFAULT_PROFILE: Profile = {
   dob: "2003-03-15",
   gender: "Male",
   bio: "Fashion enthusiast | Keep exploring new styles ✨",
-  photo: "/images/profile-logo.jpg",
 };
 
 const KEY = "profile";

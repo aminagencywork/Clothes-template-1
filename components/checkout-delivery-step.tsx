@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowRight, CalendarDays, PackageCheck, Truck, Zap, type LucideIcon } from "lucide-react";
-import { CheckoutShell, Radio, card, editLink, primaryBtn } from "./checkout-shell";
+import { CheckoutShell, Radio, card, editLink, primaryBtn, primaryBtnStyle } from "./checkout-shell";
 import { cn } from "@/lib/utils";
 import { DELIVERY, addDays, addressLines, deliveryEta, formatDay, isoDate, money, patchCheckout, useAddresses, useCheckout, type DeliveryId } from "@/lib/checkout";
 
@@ -24,7 +24,7 @@ export function CheckoutDeliveryStep() {
           const on = s.delivery === d.id;
           const Icon = ICONS[d.id] ?? PackageCheck;
           return (
-            <div key={d.id} className={cn(card, "border p-[calc(var(--u)*28)] transition-colors", on ? "border-gold-dark/40 bg-pill/80" : "border-transparent")}>
+            <div key={d.id} className={cn(card, "border p-[calc(var(--u)*28)] transition-colors", on ? "bg-pill/80" : "border-transparent")} style={on ? { borderColor: "rgba(58,74,46,0.4)" } : undefined}>
               <div
                 role="radio"
                 aria-checked={on}
@@ -79,7 +79,7 @@ export function CheckoutDeliveryStep() {
         </section>
       )}
 
-      <button type="button" disabled={needsDate} onClick={() => router.push("/checkout/payment")} className={cn(primaryBtn, "mt-[calc(var(--u)*30)]")}>
+      <button type="button" disabled={needsDate} onClick={() => router.push("/checkout/payment")} className={cn(primaryBtn, "mt-[calc(var(--u)*30)]")} style={primaryBtnStyle}>
         {needsDate ? "Choose a delivery date" : <>Continue to Payment <ArrowRight className="size-[calc(var(--u)*34)]" strokeWidth={1.6} /></>}
       </button>
     </CheckoutShell>
