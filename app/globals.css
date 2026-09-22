@@ -15,6 +15,7 @@
   --color-banner: #e9e1d1;
   --font-display: var(--font-gloock);
   --font-sans: var(--font-dm-sans);
+  --font-script: var(--font-caveat);
 }
 
 body {

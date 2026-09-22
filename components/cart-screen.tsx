@@ -8,6 +8,7 @@ import { BottomNav } from "./bottom-nav";
 import { PhoneFrame } from "./phone-frame";
 import { SwipeRow } from "./swipe-row";
 import { cn } from "@/lib/utils";
+import { AMBER, AMBER_LIGHT, FOREST } from "@/lib/theme";
 import { products } from "@/lib/products";
 import { lineKey, removeCartItem, updateCartItem, useCart } from "@/lib/cart";
 import { addToWishlist } from "@/lib/wishlist";
@@ -16,7 +17,8 @@ import { addToWishlist } from "@/lib/wishlist";
 const DISCOUNT_RATE = 0.1;
 const SHIPPING = 8;
 const money = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-const round = "grid place-items-center rounded-full bg-pill/80";
+const round = "grid place-items-center rounded-full";
+const roundStyle = { background: AMBER_LIGHT };
 const card = "rounded-[calc(var(--u)*28)] bg-white/70 shadow-[0_2px_14px_rgba(60,45,20,0.05)]";
 
 export function CartScreen() {
@@ -62,16 +64,21 @@ export function CartScreen() {
       <main className="px-[calc(var(--u)*48)] pb-[calc(var(--u)*190)] pt-[calc(var(--u)*88)]">
         {/* header */}
         <header className="relative flex items-start justify-between">
-          <Link href="/home" aria-label="Back" className={cn(round, "size-[calc(var(--u)*88)]")}>
+          <Link href="/home" aria-label="Back" className={cn(round, "size-[calc(var(--u)*88)]")} style={roundStyle}>
             <ChevronLeft className="size-[calc(var(--u)*44)]" strokeWidth={1.6} />
           </Link>
           <div className="pointer-events-none absolute inset-x-0 top-[calc(var(--u)*-2)] text-center">
             <h1 className="font-display text-[calc(var(--u)*52)] leading-[1.1]">My Cart</h1>
             <p className="mt-[calc(var(--u)*8)] text-[calc(var(--u)*24)] text-muted">Review your items before checkout</p>
           </div>
-          <button type="button" aria-label="More" className={cn(round, "relative size-[calc(var(--u)*88)]")}>
-            <MoreHorizontal className="size-[calc(var(--u)*40)]" strokeWidth={2} />
-          </button>
+          <div className="flex gap-[calc(var(--u)*14)]">
+            <Link href="/wishlist" aria-label="Wishlist" className={cn(round, "size-[calc(var(--u)*88)]")} style={roundStyle}>
+              <Heart className="size-[calc(var(--u)*40)]" strokeWidth={1.7} />
+            </Link>
+            <button type="button" aria-label="More" className={cn(round, "relative size-[calc(var(--u)*88)]")} style={roundStyle}>
+              <MoreHorizontal className="size-[calc(var(--u)*40)]" strokeWidth={2} />
+            </button>
+          </div>
         </header>
 
         <p className="mt-[calc(var(--u)*22)] pr-[calc(var(--u)*8)] text-right text-[calc(var(--u)*24)]" aria-live="polite">
@@ -114,7 +121,7 @@ export function CartScreen() {
         {lines.length === 0 && (
           <div className="mt-[calc(var(--u)*140)] text-center">
             <p className="font-display text-[calc(var(--u)*44)]">Your cart is empty</p>
-            <Link href="/home" className="mt-[calc(var(--u)*30)] inline-block rounded-full bg-gold-dark px-[calc(var(--u)*50)] py-[calc(var(--u)*24)] text-[calc(var(--u)*28)] text-white">
+            <Link href="/home" className="mt-[calc(var(--u)*30)] inline-block rounded-full px-[calc(var(--u)*50)] py-[calc(var(--u)*24)] text-[calc(var(--u)*28)] text-white" style={{ background: FOREST }}>
               Start shopping
             </Link>
           </div>
@@ -132,7 +139,7 @@ export function CartScreen() {
                 <p className="text-[calc(var(--u)*26)]">Promo Code or Gift Card</p>
                 <p className="text-[calc(var(--u)*23)] text-muted">Save more on your purchase</p>
               </div>
-              <button type="button" className="h-[calc(var(--u)*60)] w-[calc(var(--u)*182)] rounded-full bg-pill text-[calc(var(--u)*25)]">Apply</button>
+              <button type="button" className="h-[calc(var(--u)*60)] w-[calc(var(--u)*182)] rounded-full text-[calc(var(--u)*25)]" style={{ background: AMBER_LIGHT, color: AMBER }}>Apply</button>
             </section>
 
             {/* summary */}
@@ -150,7 +157,7 @@ export function CartScreen() {
             </section>
             {toast}
 
-            <Link href="/checkout/address" className="mt-[calc(var(--u)*17)] flex h-[calc(var(--u)*88)] w-full items-center justify-center gap-[calc(var(--u)*26)] rounded-[calc(var(--u)*24)] bg-gold-dark text-[calc(var(--u)*30)] text-white transition-transform active:scale-[0.99]">
+            <Link href="/checkout/address" className="mt-[calc(var(--u)*17)] flex h-[calc(var(--u)*88)] w-full items-center justify-center gap-[calc(var(--u)*26)] rounded-[calc(var(--u)*24)] text-[calc(var(--u)*30)] text-white transition-transform active:scale-[0.99]" style={{ background: FOREST }}>
               <Lock className="size-[calc(var(--u)*40)]" strokeWidth={1.5} />
               Proceed to Checkout
               <ArrowRight className="size-[calc(var(--u)*36)]" strokeWidth={1.6} />

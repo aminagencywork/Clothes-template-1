@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import { PhoneFrame } from "./phone-frame";
 import { cn } from "@/lib/utils";
 import { removeCartItem, lineKey, useCart } from "@/lib/cart";
+import { FOREST } from "@/lib/theme";
 import { usePlacedOrders } from "@/lib/placed-orders";
 
 const CONFETTI = [
@@ -57,7 +58,7 @@ export function OrderSuccessScreen({ id }: { id: string }) {
         )}
 
         {order && (
-          <Link href={`/orders/${order.id}`} className="mt-[calc(var(--u)*30)] flex h-[calc(var(--u)*100)] w-full items-center justify-center rounded-[calc(var(--u)*24)] bg-gold-dark text-[calc(var(--u)*29)] font-medium text-white">
+          <Link href={`/orders/${order.id}`} className="mt-[calc(var(--u)*30)] flex h-[calc(var(--u)*100)] w-full items-center justify-center rounded-[calc(var(--u)*24)] text-[calc(var(--u)*29)] font-medium text-white" style={{ background: FOREST }}>
             View Order Details
           </Link>
         )}

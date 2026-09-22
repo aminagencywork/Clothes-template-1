@@ -2,43 +2,51 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { ArrowRight, ChevronRight, Menu, Search, X } from "lucide-react";
-import { AddToCartButton } from "./add-to-cart-button";
+import { useMemo, useState, type ComponentType } from "react";
+import { ArrowRight, ChevronRight, Footprints, Menu, PersonStanding, ScanLine, Search, Shirt, ShoppingBag, Smile, X } from "lucide-react";
+import { AddToCartPill } from "./add-to-cart-pill";
 import { BottomNav } from "./bottom-nav";
 import { FavoriteButton } from "./favorite-button";
 import { MenuDrawer } from "./menu-drawer";
 import { PhoneFrame } from "./phone-frame";
+import { ProfileAvatar } from "./profile-bits";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
-import { categories, products, type Category, type Product } from "@/lib/products";
+import { categories, discountPercent, products, type Category, type Product } from "@/lib/products";
+import { AMBER, AMBER_LIGHT, FOREST } from "@/lib/theme";
 
-function CollectionCard({ product, liked, onToggleLike }: { product: Product; liked: boolean; onToggleLike: (id: string) => void }) {
+const categoryIcons: Record<string, ComponentType<{ className?: string; strokeWidth?: number }>> = {
+  All: Shirt,
+  "Men's": Shirt,
+  "Women's": PersonStanding,
+  Kids: Smile,
+  Shoes: Footprints,
+  Accessories: ShoppingBag,
+};
+
+function ProductCard({ product, liked, onToggleLike }: { product: Product; liked: boolean; onToggleLike: (id: string) => void }) {
+  const off = discountPercent(product);
   return (
-    <article className="relative w-[calc(var(--u)*287)] shrink-0 snap-start overflow-hidden rounded-[calc(var(--u)*34)] bg-white pb-[calc(var(--u)*28)] shadow-[0_4px_24px_rgba(60,45,20,0.06)]">
-      <div className="relative h-[calc(var(--u)*342)] bg-card">
+    <article className="w-[calc(var(--u)*287)] shrink-0 snap-start overflow-hidden rounded-[calc(var(--u)*30)] bg-white shadow-[0_4px_20px_rgba(35,45,25,0.08)]">
+      <div className="relative h-[calc(var(--u)*300)] bg-card">
         <Link href={`/product/${product.id}`} aria-label={product.name} className="absolute inset-0">
           <Image src={product.image} alt={product.name} fill sizes="140px" className="object-cover object-top" />
         </Link>
-        <FavoriteButton
-          liked={liked}
-          label={product.name}
-          onClick={() => onToggleLike(product.id)}
-          className="absolute right-[calc(var(--u)*16)] top-[calc(var(--u)*16)]"
-        />
+        {off > 0 && (
+          <span className="absolute left-[calc(var(--u)*14)] top-[calc(var(--u)*14)] rounded-full bg-white px-[calc(var(--u)*16)] py-[calc(var(--u)*7)] text-[calc(var(--u)*18)]">{off}% Off</span>
+        )}
+        <FavoriteButton liked={liked} label={product.name} onClick={() => onToggleLike(product.id)} className="absolute right-[calc(var(--u)*14)] top-[calc(var(--u)*14)] !size-[calc(var(--u)*54)]" />
       </div>
-      <div className="px-[calc(var(--u)*22)]">
-        <h3 className="mt-[calc(var(--u)*18)] truncate text-[calc(var(--u)*24)]">
-          <Link href={`/product/${product.id}`}>{product.name}</Link>
-        </h3>
-        <p className="mt-[calc(var(--u)*8)] text-[calc(var(--u)*31)] font-semibold">${product.price.toFixed(2)}</p>
-        <div className="mt-[calc(var(--u)*16)] flex gap-[calc(var(--u)*16)]">
-          {product.colors.slice(0, 3).map((c) => (
-            <span key={c} className="size-[calc(var(--u)*34)] rounded-full ring-1 ring-black/5" style={{ background: c }} />
+      <div className="p-[calc(var(--u)*20)]">
+        <h3 className="truncate text-[calc(var(--u)*25)]"><Link href={`/product/${product.id}`}>{product.name}</Link></h3>
+        <p className="mt-[calc(var(--u)*8)] text-[calc(var(--u)*29)] font-semibold">${product.price.toFixed(2)}</p>
+        <div className="mt-[calc(var(--u)*14)] flex gap-[calc(var(--u)*14)]">
+          {product.colors.slice(0, 4).map((c) => (
+            <span key={c} className="size-[calc(var(--u)*28)] rounded-full ring-1 ring-black/5" style={{ background: c }} />
           ))}
         </div>
+        <AddToCartPill product={product} className="mt-[calc(var(--u)*18)] h-[calc(var(--u)*66)] w-full text-[calc(var(--u)*23)]" />
       </div>
-      <AddToCartButton product={product} className="bottom-[calc(var(--u)*20)] right-[calc(var(--u)*20)] size-[calc(var(--u)*64)] rounded-[calc(var(--u)*20)]" />
     </article>
   );
 }
@@ -80,69 +88,100 @@ export function HomeScreen() {
         {/* 1. nav bar */}
         <section aria-label="Top bar" className="sticky top-0 z-30 bg-page/90 py-[calc(var(--u)*10)] backdrop-blur-md mt-[calc(var(--u)*15)] -mx-[calc(var(--u)*40)] px-[calc(var(--u)*40)]">
           <header className="relative flex items-center justify-between">
-          <button type="button" aria-label="Menu" aria-haspopup="dialog" onClick={() => setMenuOpen(true)} className="grid size-[calc(var(--u)*92)] place-items-center rounded-full bg-pill/80 shadow-[0_4px_20px_rgba(60,45,20,0.06)]">
+          <button type="button" aria-label="Menu" aria-haspopup="dialog" onClick={() => setMenuOpen(true)} className="grid size-[calc(var(--u)*92)] place-items-center rounded-full shadow-[0_4px_20px_rgba(60,45,20,0.06)]" style={{ background: AMBER_LIGHT }}>
             <Menu className="size-[calc(var(--u)*44)]" strokeWidth={1.7} />
           </button>
-          <Image src="/images/home-logo.jpg" alt="Vyntra – wear a brighter you" width={290} height={135} priority className="h-[calc(var(--u)*92)] w-auto mix-blend-multiply" />
-          <Link href="/profile" aria-label="Profile" className="block rounded-full bg-white p-[calc(var(--u)*4)] shadow-[0_4px_20px_rgba(60,45,20,0.1)]">
-            <Image src="/images/profile-logo.jpg" alt="" width={92} height={92} className="size-[calc(var(--u)*88)] rounded-full object-cover" />
+          <Image src="/images/navbar-logo.png" alt="Vyntra – wear a brighter you" width={900} height={519} priority className="h-[calc(var(--u)*82)] w-auto" />
+          <Link href="/profile" aria-label="Profile" className="relative block rounded-full bg-white p-[calc(var(--u)*4)] shadow-[0_4px_20px_rgba(60,45,20,0.1)]">
+            <ProfileAvatar className="size-[calc(var(--u)*88)] rounded-full object-cover" />
+            <span className="absolute bottom-[calc(var(--u)*2)] right-[calc(var(--u)*2)] size-[calc(var(--u)*20)] rounded-full border-[calc(var(--u)*3)] border-white bg-[#3a9a4a]" />
           </Link>
         </header>
         </section>
 
         {/* 2. hero banner: image + heading + paragraph */}
-        <section className="relative h-[calc(var(--u)*330)] mt-[calc(var(--u)*20)]">
+        <section className="relative h-[calc(var(--u)*400)] mt-[calc(var(--u)*24)]">
+          <div className="pointer-events-none absolute -right-[calc(var(--u)*60)] top-[calc(var(--u)*10)] size-[calc(var(--u)*300)] rounded-full opacity-60" style={{ background: "#e9edda" }} aria-hidden />
           <Image
-            src="/images/home-hero.jpg"
+            src="/images/home-hero-2.jpg"
             alt=""
-            width={541}
-            height={300}
+            width={355}
+            height={1070}
             priority
-            className="pointer-events-none absolute -right-[calc(var(--u)*40)] top-0 w-[calc(var(--u)*541)] [mask-image:linear-gradient(to_right,transparent,#000_30%),linear-gradient(to_top,transparent,#000_12%)] [mask-composite:intersect]"
+            className="pointer-events-none absolute -right-[calc(var(--u)*10)] top-[calc(var(--u)*20)] h-[calc(var(--u)*400)] w-[calc(var(--u)*360)] object-cover [mask-image:linear-gradient(to_right,transparent,#000_32%)]"
           />
-          <div className="relative pt-[calc(var(--u)*24)]">
-            <h1 className="w-[calc(var(--u)*420)] font-display text-[calc(var(--u)*68)] leading-[1.06]">Find the one you prefer.</h1>
-            <p className="mt-[calc(var(--u)*22)] w-[calc(var(--u)*340)] text-[calc(var(--u)*27)] leading-[1.4] text-muted">
+          <p className="font-script absolute right-[calc(var(--u)*30)] top-[calc(var(--u)*30)] text-[calc(var(--u)*34)] italic leading-[1.1]" style={{ color: AMBER }}>
+            Style<br />Lives<br />Here
+          </p>
+          <div className="relative pt-[calc(var(--u)*10)]">
+            <p className="flex items-center gap-[calc(var(--u)*14)] text-[calc(var(--u)*22)] tracking-[0.18em] text-muted">
+              NEW SEASON <span className="h-px w-[calc(var(--u)*60)] bg-muted/60" />
+            </p>
+            <h1 className="mt-[calc(var(--u)*10)] w-[calc(var(--u)*380)] font-display text-[calc(var(--u)*62)] leading-[1.06]">
+              Find the one<br />
+              <span style={{ color: AMBER }}>you prefer.</span>
+            </h1>
+            <p className="mt-[calc(var(--u)*20)] w-[calc(var(--u)*320)] text-[calc(var(--u)*26)] leading-[1.4] text-muted">
               Discover stylish outfits for every version of you.
             </p>
+            <Link
+              href="/categories"
+              className="mt-[calc(var(--u)*24)] flex h-[calc(var(--u)*86)] w-fit items-center gap-[calc(var(--u)*20)] rounded-full pl-[calc(var(--u)*36)] pr-[calc(var(--u)*10)] text-[calc(var(--u)*27)] font-medium text-white shadow-md transition-transform active:scale-95"
+              style={{ background: FOREST }}
+            >
+              Shop Now
+              <span className="grid size-[calc(var(--u)*66)] place-items-center rounded-full bg-page" style={{ color: FOREST }}>
+                <ArrowRight className="size-[calc(var(--u)*30)]" strokeWidth={1.8} />
+              </span>
+            </Link>
           </div>
         </section>
 
         {/* 3. search */}
-        <section aria-label="Search" className="mt-[calc(var(--u)*10)]">
-          <label className="flex h-[calc(var(--u)*86)] items-center gap-[calc(var(--u)*28)] rounded-full border border-black/[0.06] bg-white/90 px-[calc(var(--u)*34)] shadow-[0_4px_24px_rgba(60,45,20,0.06)]">
-            <Search className="size-[calc(var(--u)*44)] shrink-0" strokeWidth={1.6} />
+        <section aria-label="Search" className="mt-[calc(var(--u)*20)]">
+          <label className="flex h-[calc(var(--u)*86)] items-center gap-[calc(var(--u)*24)] rounded-full border border-black/[0.06] bg-white px-[calc(var(--u)*34)] shadow-[0_4px_24px_rgba(60,45,20,0.06)]">
+            <Search className="size-[calc(var(--u)*40)] shrink-0 text-muted" strokeWidth={1.6} />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search for products, brands and more..."
               aria-label="Search products"
-              className="w-full min-w-0 bg-transparent text-[calc(var(--u)*26)] outline-none placeholder:text-muted"
+              className="w-full min-w-0 bg-transparent text-[calc(var(--u)*25)] outline-none placeholder:text-muted"
             />
-            {query && (
+            {query ? (
               <button type="button" aria-label="Clear search" onClick={() => setQuery("")}>
                 <X className="size-[calc(var(--u)*34)] text-muted" />
               </button>
+            ) : (
+              <span className="grid size-[calc(var(--u)*56)] shrink-0 place-items-center rounded-[calc(var(--u)*16)] border border-black/10 text-muted">
+                <ScanLine className="size-[calc(var(--u)*28)]" strokeWidth={1.6} />
+              </span>
             )}
           </label>
         </section>
 
         {/* 4. category slider */}
-        <section aria-label="Categories" className="no-scrollbar mt-[calc(var(--u)*34)] flex gap-[calc(var(--u)*17)] overflow-x-auto -mx-[calc(var(--u)*40)] px-[calc(var(--u)*40)]">
-          {categories.map((c) => (
-            <button
-              key={c}
-              type="button"
-              aria-pressed={category === c}
-              onClick={() => setCategory(c)}
-              className={cn(
-                "h-[calc(var(--u)*66)] shrink-0 rounded-full px-[calc(var(--u)*36)] text-[calc(var(--u)*26)] transition-colors",
-                category === c ? "bg-gold-dark text-white" : "bg-pill/80",
-              )}
-            >
-              {c}
-            </button>
-          ))}
+        <section aria-label="Categories" className="no-scrollbar mt-[calc(var(--u)*30)] flex gap-[calc(var(--u)*17)] overflow-x-auto -mx-[calc(var(--u)*40)] px-[calc(var(--u)*40)]">
+          {categories.map((c) => {
+            const Icon = categoryIcons[c] ?? Shirt;
+            const on = category === c;
+            return (
+              <button
+                key={c}
+                type="button"
+                aria-pressed={on}
+                onClick={() => setCategory(c)}
+                className={cn(
+                  "flex h-[calc(var(--u)*66)] shrink-0 items-center gap-[calc(var(--u)*14)] rounded-full px-[calc(var(--u)*30)] text-[calc(var(--u)*26)] transition-colors",
+                  on && "text-white",
+                )}
+                style={on ? { background: FOREST } : { background: AMBER_LIGHT, color: "#3a3a2e" }}
+              >
+                <Icon className="size-[calc(var(--u)*30)]" strokeWidth={1.6} />
+                {c}
+              </button>
+            );
+          })}
         </section>
 
         {/* 5. popular collection + product grid */}
@@ -161,14 +200,14 @@ export function HomeScreen() {
         ) : (
           <div className="no-scrollbar mt-[calc(var(--u)*24)] flex snap-x scroll-px-[calc(var(--u)*40)] gap-[calc(var(--u)*22)] overflow-x-auto -mx-[calc(var(--u)*40)] px-[calc(var(--u)*40)] pb-[calc(var(--u)*8)]">
             {visible.map((p) => (
-              <CollectionCard key={p.id} product={p} liked={liked.has(p.id)} onToggleLike={toggleLike} />
+              <ProductCard key={p.id} product={p} liked={liked.has(p.id)} onToggleLike={toggleLike} />
             ))}
           </div>
         )}
         </section>
 
         {/* 6. special offer banner */}
-        <section className="relative mt-[calc(var(--u)*28)] h-[calc(var(--u)*320)] overflow-hidden rounded-[calc(var(--u)*30)] bg-banner">
+        <section className="relative mt-[calc(var(--u)*28)] h-[calc(var(--u)*227)] overflow-hidden rounded-[calc(var(--u)*30)]" style={{ background: "#efe7d6" }}>
           <Image
             src="/images/home-offer.jpg"
             alt="White sneakers and a cap"
@@ -177,15 +216,22 @@ export function HomeScreen() {
             className="absolute right-[calc(var(--u)*104)] top-0 h-full w-[calc(var(--u)*428)] object-cover [mask-image:linear-gradient(to_right,transparent,#000_18%)]"
           />
           <div className="absolute left-[calc(var(--u)*30)] top-[calc(var(--u)*26)]">
-            <p className="text-[calc(var(--u)*19)] tracking-[0.14em] text-gold-dark">SPECIAL OFFER</p>
+            <p className="text-[calc(var(--u)*19)] tracking-[0.14em]" style={{ color: AMBER }}>SPECIAL OFFER</p>
             <h2 className="mt-[calc(var(--u)*6)] font-display text-[calc(var(--u)*50)] leading-[1.03]">Upgrade Your<br />Wardrobe</h2>
-            <p className="mt-[calc(var(--u)*12)] text-[calc(var(--u)*25)] text-muted">Get up to <b className="font-semibold text-ink">40% Off</b></p>
-          <Link href="/categories" className="mt-[calc(var(--u)*18)] inline-flex h-[calc(var(--u)*62)] items-center gap-[calc(var(--u)*14)] rounded-full bg-gold-dark px-[calc(var(--u)*30)] text-[calc(var(--u)*24)] font-medium text-white shadow-md">
-            Shop Now <ArrowRight className="size-[calc(var(--u)*26)]" />
-          </Link>
+            <p className="mt-[calc(var(--u)*12)] text-[calc(var(--u)*25)] text-muted">Get up to <b className="font-semibold" style={{ color: AMBER }}>40% Off</b></p>
+            <Link href="/categories" className="mt-[calc(var(--u)*18)] inline-flex h-[calc(var(--u)*62)] items-center gap-[calc(var(--u)*14)] rounded-full px-[calc(var(--u)*30)] text-[calc(var(--u)*24)] font-medium text-white shadow-md" style={{ background: AMBER }}>
+              Shop Now <ArrowRight className="size-[calc(var(--u)*26)]" />
+            </Link>
           </div>
-          <p className="absolute right-[calc(var(--u)*26)] top-[calc(var(--u)*62)] font-display text-[calc(var(--u)*30)] leading-[1.3] text-muted">Style<br />More<br />You</p>
+          <span className="absolute right-[calc(var(--u)*24)] top-[calc(var(--u)*44)] grid size-[calc(var(--u)*140)] place-items-center rounded-full text-center text-[calc(var(--u)*24)] leading-[1.25] text-white" style={{ background: FOREST }}>
+            Style<br />More<br />You
+          </span>
         </section>
+        <div className="mt-[calc(var(--u)*18)] flex justify-center gap-[calc(var(--u)*12)]">
+          {[0, 1, 2, 3].map((i) => (
+            <span key={i} className={cn("size-[calc(var(--u)*14)] rounded-full", i === 0 ? "bg-ink" : "bg-dot")} />
+          ))}
+        </div>
 
         {/* 7+. more collections */}
         {extraSections.map(({ title, items }) =>
@@ -199,7 +245,7 @@ export function HomeScreen() {
               </div>
               <div className="no-scrollbar mt-[calc(var(--u)*24)] flex snap-x scroll-px-[calc(var(--u)*40)] gap-[calc(var(--u)*22)] overflow-x-auto -mx-[calc(var(--u)*40)] px-[calc(var(--u)*40)] pb-[calc(var(--u)*8)]">
                 {items.map((p) => (
-                  <CollectionCard key={p.id} product={p} liked={liked.has(p.id)} onToggleLike={toggleLike} />
+                  <ProductCard key={p.id} product={p} liked={liked.has(p.id)} onToggleLike={toggleLike} />
                 ))}
               </div>
             </section>

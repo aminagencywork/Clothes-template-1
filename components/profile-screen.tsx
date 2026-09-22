@@ -9,6 +9,7 @@ import { PhoneFrame } from "./phone-frame";
 import { ProfileAvatar, ProfileText } from "./profile-bits";
 import { WishlistCount } from "./wishlist-count";
 import { orders } from "@/lib/orders";
+import { AMBER, AMBER_LIGHT, FOREST } from "@/lib/theme";
 
 const stats: { label: string; count: number | "wishlist"; Icon: LucideIcon; href?: string }[] = [
   { label: "Wishlist", count: "wishlist", Icon: Heart, href: "/wishlist" },
@@ -36,15 +37,15 @@ export function ProfileScreen() {
         {/* header */}
         <header className="flex items-start justify-between">
           <div className="pl-[calc(var(--u)*8)]">
-            <h1 className="font-display text-[calc(var(--u)*62)] leading-none">My Profile</h1>
+            <h1 className="font-display text-[calc(var(--u)*62)] leading-none" style={{ color: AMBER }}>My Profile</h1>
             <p className="mt-[calc(var(--u)*14)] text-[calc(var(--u)*27)] text-muted">Style reflects who you are</p>
           </div>
           <div className="flex gap-[calc(var(--u)*20)]">
-            <button type="button" aria-label="Notifications" className="relative grid size-[calc(var(--u)*92)] place-items-center rounded-full bg-pill/80">
+            <button type="button" aria-label="Notifications" className="relative grid size-[calc(var(--u)*92)] place-items-center rounded-full" style={{ background: AMBER_LIGHT }}>
               <Bell className="size-[calc(var(--u)*42)]" strokeWidth={1.5} />
-              <span className="absolute right-[calc(var(--u)*22)] top-[calc(var(--u)*20)] size-[calc(var(--u)*15)] rounded-full bg-gold-dark" />
+              <span className="absolute right-[calc(var(--u)*22)] top-[calc(var(--u)*20)] size-[calc(var(--u)*15)] rounded-full" style={{ background: FOREST }} />
             </button>
-            <button type="button" aria-label="Settings" className="grid size-[calc(var(--u)*92)] place-items-center rounded-full bg-pill/80">
+            <button type="button" aria-label="Settings" className="grid size-[calc(var(--u)*92)] place-items-center rounded-full" style={{ background: AMBER_LIGHT }}>
               <Settings className="size-[calc(var(--u)*42)]" strokeWidth={1.5} />
             </button>
           </div>
@@ -71,7 +72,7 @@ export function ProfileScreen() {
         {/* stats */}
         <div className="mt-[calc(var(--u)*18)] grid grid-cols-4 gap-[calc(var(--u)*15)]">
           {stats.map(({ label, count, Icon, href }) => {
-            const cls = "flex h-[calc(var(--u)*185)] flex-col items-center justify-center rounded-[calc(var(--u)*30)] bg-pill/70 text-center transition-transform active:scale-95";
+            const cls = "flex h-[calc(var(--u)*185)] flex-col items-center justify-center rounded-[calc(var(--u)*30)] text-center transition-transform active:scale-95";
             const body = (
               <>
                 <Icon className="size-[calc(var(--u)*50)]" strokeWidth={1.4} />
@@ -80,9 +81,9 @@ export function ProfileScreen() {
               </>
             );
             return href ? (
-              <Link key={label} href={href} className={cls}>{body}</Link>
+              <Link key={label} href={href} className={cls} style={{ background: AMBER_LIGHT }}>{body}</Link>
             ) : (
-              <button key={label} type="button" className={cls}>{body}</button>
+              <button key={label} type="button" className={cls} style={{ background: AMBER_LIGHT }}>{body}</button>
             );
           })}
         </div>
@@ -107,16 +108,16 @@ export function ProfileScreen() {
         </ul>
 
         {/* offers */}
-        <section className="relative mt-[calc(var(--u)*26)] h-[calc(var(--u)*225)] overflow-hidden rounded-[calc(var(--u)*26)] bg-banner">
-          <div className="absolute left-[calc(var(--u)*34)] top-[calc(var(--u)*30)]">
-            <p className="text-[calc(var(--u)*17)] tracking-[0.2em] text-muted">STYLE MORE YOU</p>
+        <section className="relative mt-[calc(var(--u)*26)] h-[calc(var(--u)*225)] overflow-hidden rounded-[calc(var(--u)*26)]" style={{ background: FOREST }}>
+          <div className="absolute left-[calc(var(--u)*34)] top-[calc(var(--u)*30)] text-white">
+            <p className="text-[calc(var(--u)*17)] tracking-[0.2em]" style={{ color: AMBER }}>STYLE MORE YOU</p>
             <h2 className="font-display mt-[calc(var(--u)*8)] text-[calc(var(--u)*46)] leading-[1.05]">Exclusive Offers<br />Just for You</h2>
           </div>
-          <Link href="/home" className="absolute bottom-[calc(var(--u)*14)] left-[calc(var(--u)*34)] flex h-[calc(var(--u)*55)] items-center gap-[calc(var(--u)*12)] rounded-full bg-gold-dark px-[calc(var(--u)*30)] text-[calc(var(--u)*24)] text-white">
+          <Link href="/home" className="absolute bottom-[calc(var(--u)*14)] left-[calc(var(--u)*34)] flex h-[calc(var(--u)*55)] items-center gap-[calc(var(--u)*12)] rounded-full bg-white px-[calc(var(--u)*30)] text-[calc(var(--u)*24)] text-ink">
             Explore Now <ArrowRight className="size-[calc(var(--u)*24)]" />
           </Link>
           <Image src="/images/banner-model.jpg" alt="Model in sunglasses" width={280} height={242} className="absolute bottom-0 left-[calc(var(--u)*470)] h-full w-[calc(var(--u)*300)] object-cover object-top [mask-image:linear-gradient(to_right,transparent,#000_15%)]" />
-          <p className="absolute right-[calc(var(--u)*24)] top-[calc(var(--u)*44)] text-[calc(var(--u)*22)] leading-[1.3] text-muted">Better<br />Style<br />Brighter<br />You</p>
+          <p className="font-script absolute right-[calc(var(--u)*26)] top-[calc(var(--u)*44)] text-[calc(var(--u)*26)] italic leading-[1.35] text-white/90">Better<br />Style<br />Brighter<br />You</p>
         </section>
 
         <BottomNav active="/profile" cartCount={CART_COUNT} />

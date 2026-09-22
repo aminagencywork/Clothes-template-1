@@ -8,6 +8,7 @@ import {
   ChevronRight, ClipboardList, CreditCard, Crown, Headset, Heart, House, LayoutGrid, LogOut,
   MapPin, Settings, Sparkles, BadgePercent, X, type LucideIcon,
 } from "lucide-react";
+import { ProfileAvatar } from "./profile-bits";
 import { cn } from "@/lib/utils";
 
 type Item = { label: string; Icon: LucideIcon; href?: string };
@@ -74,7 +75,7 @@ export function MenuDrawer({ open, onClose, active = "/home" }: { open: boolean;
             </div>
 
             <Link href="/profile" onClick={onClose} className="mt-[calc(var(--u)*30)] flex items-center gap-[calc(var(--u)*28)]">
-              <Image src="/images/menu-avatar.jpg" alt="" width={126} height={126} className="size-[calc(var(--u)*126)] rounded-full object-cover" />
+              <ProfileAvatar className="size-[calc(var(--u)*126)] rounded-full object-cover" />
               <span className="min-w-0 flex-1">
                 <span className="block font-display text-[calc(var(--u)*38)] leading-tight">Ibrahim</span>
                 <span className="mt-[calc(var(--u)*8)] block text-[calc(var(--u)*23)] leading-[1.25] text-muted">View and edit your profile</span>

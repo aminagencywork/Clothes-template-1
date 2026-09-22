@@ -4,13 +4,14 @@ import Link from "next/link";
 import { forwardRef } from "react";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AMBER_LIGHT } from "@/lib/theme";
 import { useWishlist } from "@/lib/wishlist";
 
 /** Header heart button linking to the wishlist; the badge pops when the count changes. */
 export const WishlistLink = forwardRef<HTMLAnchorElement, { className?: string }>(function WishlistLink({ className }, ref) {
   const count = useWishlist().length;
   return (
-    <Link ref={ref} href="/wishlist" aria-label={`Wishlist, ${count} items`} className={cn("relative grid place-items-center rounded-full bg-pill/80", className)}>
+    <Link ref={ref} href="/wishlist" aria-label={`Wishlist, ${count} items`} className={cn("relative grid place-items-center rounded-full", className)} style={{ background: AMBER_LIGHT }}>
       <Heart className="size-[calc(var(--u)*42)]" strokeWidth={1.6} />
       {count > 0 && (
         <span
