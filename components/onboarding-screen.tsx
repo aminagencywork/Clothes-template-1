@@ -79,7 +79,7 @@ export function OnboardingScreen() {
 
         {/* CTA */}
         <Link
-          href="/home"
+          href="/signin"
           className="mx-auto mt-[calc(var(--u)*120)] flex h-[calc(var(--u)*100)] w-fit items-center gap-[calc(var(--u)*26)] rounded-full pl-[calc(var(--u)*48)] pr-[calc(var(--u)*10)] shadow-[0_10px_26px_rgba(58,74,46,0.28)] transition-transform active:scale-[0.98]"
           style={{ background: FOREST }}
         >
